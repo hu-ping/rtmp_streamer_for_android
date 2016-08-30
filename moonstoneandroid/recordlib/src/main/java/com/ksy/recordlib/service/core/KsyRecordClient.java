@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.ImageFormat;
 import android.hardware.Camera;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -19,6 +20,7 @@ import com.ksy.recordlib.service.exception.KsyRecordException;
 import com.ksy.recordlib.service.recoder.RecoderAudioSource;
 import com.ksy.recordlib.service.recoder.RecoderVideoSource;
 import com.ksy.recordlib.service.recoder.RecoderVideoTempSource;
+import com.ksy.recordlib.service.recoder.VideoSourceEncoder;
 import com.ksy.recordlib.service.rtmp.KSYRtmpFlvClient;
 import com.ksy.recordlib.service.util.CameraUtil;
 import com.ksy.recordlib.service.util.Constants;
@@ -40,17 +42,21 @@ public class KsyRecordClient implements KsyRecord, OnClientErrorListener {
     public static final int CAMEAR_FLASH_SUCCESS = 0;
 
 
-    private static final String TAG = "KsyRecordClient";
     private static KsyRecordClient mInstance;
     private RecordHandler mRecordHandler;
     private Context mContext;
-    private int mEncodeMode = Constants.ENCODE_MODE_MEDIA_RECORDER;
+    //private int mEncodeMode = Constants.ENCODE_MODE_MEDIA_RECORDER;
+    private int mEncodeMode = Constants.ENCODE_MODE_MEDIA_CODEC;
+
     private static KsyRecordClientConfig mConfig;
     private Camera mCamera;
     private KSYRtmpFlvClient mKsyRtmpFlvClient;
     private SurfaceView mSurfaceView;
     private TextureView mTextureView;
-    private RecoderVideoSource mVideoSource;
+
+//    private RecoderVideoSource mVideoSource;
+    private VideoSourceEncoder mVideoSource;
+
     private KsyMediaSource mAudioSource;
     private KsyMediaSource mVideoTempSource;
 
@@ -80,7 +86,10 @@ public class KsyRecordClient implements KsyRecord, OnClientErrorListener {
     private boolean isCanTurnLightFlag = false;
 
     private enum STATE {
-        RECORDING, STOP, PAUSE, ERROR
+        RECORDING,
+        STOP,
+        PAUSE,
+        ERROR
     }
 
     public interface CameraSizeChangeListener {
@@ -112,41 +121,11 @@ public class KsyRecordClient implements KsyRecord, OnClientErrorListener {
         void OnStartFailed();
     }
 
-
-    @Override
-    public void onClientError(int source, int what) {
-        if (onClientErrorListener != null) {
-            onClientErrorListener.onClientError(source, what);
-        }
-        stopRecord();
-    }
-
     private KsyRecordClient(Context context) {
         this.mContext = context;
         mRecordHandler = new RecordHandler();
         ksyRecordSender = KsyRecordSender.getRecordInstance();
         ksyRecordSender.setStateMonitor(mRecordHandler);
-    }
-
-    public void takePicture(Camera.PictureCallback callback) {
-        try {
-            mCamera.takePicture(null, null, callback);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void registerNetworkMonitor() {
-        // Monitor network
-        IntentFilter networkFilter = new IntentFilter();
-        networkFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
-        this.mContext.registerReceiver(mReceiver, networkFilter);
-    }
-
-    public void unregisterNetworkMonitor() {
-        if (mReceiver != null) {
-            this.mContext.unregisterReceiver(mReceiver);
-        }
     }
 
     public static KsyRecordClient getInstance(Context context) {
@@ -156,77 +135,11 @@ public class KsyRecordClient implements KsyRecord, OnClientErrorListener {
         return mInstance;
     }
 
-    private BroadcastReceiver mReceiver = new BroadcastReceiver() {
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            if (action.equals(ConnectivityManager.CONNECTIVITY_ACTION)) {
-                ConnectivityManager mConnMgr = (ConnectivityManager)
-                        context.getSystemService(Context.CONNECTIVITY_SERVICE);
-                NetworkInfo aActiveInfo = mConnMgr.getActiveNetworkInfo();
-                if (aActiveInfo != null && aActiveInfo.isAvailable()) {
-                    // Network available
-                    int type = aActiveInfo.getType();
-                    if (type == ConnectivityManager.TYPE_WIFI) {
-                        // Wifi available
-                        NetworkInfo wifiInfo = mConnMgr.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-                        mNetworkChangeListener.onNetworkChanged(KsyRecordClient.NETWORK_WIFI);
-                    } else if (type == ConnectivityManager.TYPE_MOBILE) {
-                        // Mobile Network available
-                        NetworkInfo mobileInfo = mConnMgr.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
-                        mNetworkChangeListener.onNetworkChanged(KsyRecordClient.NETWORK_MOBILE);
-                    } else {
-                        // Other network
-                    }
-
-                } else {
-                    // Network unavailable
-                    stopRecord();
-                    mNetworkChangeListener.onNetworkChanged(KsyRecordClient.NETWORK_UNAVAILABLE);
-                }
-            }
-        }
-    };
-
-    public KsyRecordClient setOnClientErrorListener(OnClientErrorListener onClientErrorListener) {
-        this.onClientErrorListener = onClientErrorListener;
-        return this;
-    }
-
-    public KsyRecordClient setOrientationActivity(OrientationActivity activity) {
-        this.orientationActivity = activity;
-        return this;
-    }
-
-//    public void setCameraSizeChangedListener(CameraSizeChangeListener listener) {
-//        this.mCameraSizeChangedListener = listener;
-//    }
-
-    public void setNetworkChangeListener(NetworkChangeListener listener) {
-        this.mNetworkChangeListener = listener;
-    }
-
-    public void setPushStreamStateListener(PushStreamStateListener mPushStreamStateListener) {
-        this.mPushStreamStateListener = mPushStreamStateListener;
-    }
-
-    public void setSwitchCameraStateListener(SwitchCameraStateListener mSwitchCameraStateListener) {
-        this.mSwitchCameraStateListener = mSwitchCameraStateListener;
-    }
-
-    public KsyRecordClient setStartListener(StartListener startListener) {
-        this.startListener = startListener;
-        return this;
-    }
-
-    public KsyRecordClient setOnNetworkPoorListener(NetworkMonitor.OnNetworkPoorListener onNetworkPoorListener) {
-        this.onNetworkPoorListener = onNetworkPoorListener;
-        return this;
-    }
 
     /*
-                    *
-                    * Ks3 Record API
-                    * */
+     *
+     * Ks3 Record API
+     * */
     @Override
     public void startRecord() throws KsyRecordException {
         if (clientState == STATE.RECORDING) {
@@ -236,23 +149,26 @@ public class KsyRecordClient implements KsyRecord, OnClientErrorListener {
         mEncodeMode = judgeEncodeMode(mContext);
         try {
             mConfig.setOrientationActivity(orientationActivity);
+            ksyRecordSender.setConfig(mConfig);
             ksyRecordSender.setInputUrl(mConfig.getUrl());
             ksyRecordSender.start(mContext);
         } catch (IOException e) {
             e.printStackTrace();
             Log.e(Constants.LOG_TAG, "startRecord() : e =" + e);
         }
+
         mSwitchCameraLock = true;
         if (checkConfig()) {
             // Here we begin
             if (mEncodeMode == Constants.ENCODE_MODE_MEDIA_RECORDER) {
                 setUpMp4Config(mRecordHandler);
             } else {
-//                startRecordStep();
+                startRecordStep();
             }
         } else {
             throw new KsyRecordException("Check KsyRecordClient Configuration, param should be correct");
         }
+
         clientState = STATE.RECORDING;
     }
 
@@ -349,7 +265,7 @@ public class KsyRecordClient implements KsyRecord, OnClientErrorListener {
         final int viewHei = view.getHeight();
         final int viewArea = viewWid * viewHei;
         final int length = sizeList.size();
-        Log.v(TAG, "findBestPreviewSize viewWid=" + viewWid + " viewHei=" + viewHei);
+        Log.v(Constants.LOG_TAG, "findBestPreviewSize viewWid=" + viewWid + " viewHei=" + viewHei);
         Camera.Size resultSize = null;
         int deltaArea = 0;
         for (int i = 0; i < length; i++) {
@@ -386,20 +302,27 @@ public class KsyRecordClient implements KsyRecord, OnClientErrorListener {
                 }
                 displayOrientation = CameraUtil.getDisplayOrientation(0, currentCameraId);
                 KsyRecordClientConfig.previewOrientation = displayOrientation;
-                Log.d(TAG, "current displayOrientation = " + displayOrientation);
+                Log.d(Constants.LOG_TAG, "current displayOrientation = " + displayOrientation);
                 mCamera.setDisplayOrientation(displayOrientation);
                 Camera.Parameters parameters = mCamera.getParameters();
                 if (mCameraSizeChangedListener != null)
-                    mCameraSizeChangedListener.onCameraPreviewSize(parameters.getPreviewSize().width, parameters.getPreviewSize().height);
+                    mCameraSizeChangedListener.onCameraPreviewSize(parameters.getPreviewSize().width,
+                            parameters.getPreviewSize().height);
                 parameters.setRotation(0);
                 if (parameters.getSupportedFocusModes().contains(
                         Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE)) {
                     parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
                 }
-                Camera.Size size = findBestPreviewSize(mCamera, (mSurfaceView == null ? mTextureView : mSurfaceView));
+               // Camera.Size size = findBestPreviewSize(mCamera, (mSurfaceView == null ? mTextureView : mSurfaceView));
+
+                Camera.Size size = mCamera.new Size(mConfig.getVideoWidth(), mConfig.getVideoHeight()) ;
+
                 if (size != null) {
                     parameters.setPreviewSize(size.width, size.height);
                 }
+
+                parameters.setPreviewFormat(ImageFormat.YV12);
+
                 mCamera.setParameters(parameters);
                 if (needPreview) {
                     try {
@@ -415,8 +338,10 @@ public class KsyRecordClient implements KsyRecord, OnClientErrorListener {
                     }
                 }
             }
+
             // Here we reuse camera, just unlock it
-            mCamera.unlock();
+//            mCamera.unlock();
+
         } catch (Exception e) {
             onClientError(SOURCE_CLIENT, ERROR_CAMERA_START_FAILED);
             e.printStackTrace();
@@ -444,12 +369,19 @@ public class KsyRecordClient implements KsyRecord, OnClientErrorListener {
     // Encode using MediaRecorder
     private void DealWithMediaRecorder() {
         Log.d(Constants.LOG_TAG, "DealWithMediaRecorder");
+
+//        if (mCamera != null) {
+//            mCamera.lock();
+//        }
+
         // Video Source
         if (mVideoSource == null) {
-            mVideoSource = new RecoderVideoSource(mCamera, mConfig, mSurfaceView, mRecordHandler, mContext);
+//            mVideoSource = new RecoderVideoSource(mCamera, mConfig, mSurfaceView, mRecordHandler, mContext);
+            mVideoSource = new VideoSourceEncoder(mCamera, mConfig, mSurfaceView, mRecordHandler, mContext);
             mVideoSource.setOnClientErrorListener(this);
             mVideoSource.start();
         }
+
         // Audio Source
         if (mAudioSource == null) {
             mAudioSource = new RecoderAudioSource(mConfig, mRecordHandler, mContext);
@@ -459,11 +391,125 @@ public class KsyRecordClient implements KsyRecord, OnClientErrorListener {
 
     }
 
+
+    @Override
+    public void onClientError(int source, int what) {
+        if (onClientErrorListener != null) {
+            onClientErrorListener.onClientError(source, what);
+        }
+        stopRecord();
+    }
+
+
+    public void takePicture(Camera.PictureCallback callback) {
+        try {
+            mCamera.takePicture(null, null, callback);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void registerNetworkMonitor() {
+        // Monitor network
+        IntentFilter networkFilter = new IntentFilter();
+        networkFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
+        this.mContext.registerReceiver(mReceiver, networkFilter);
+    }
+
+    public void unregisterNetworkMonitor() {
+        if (mReceiver != null) {
+            this.mContext.unregisterReceiver(mReceiver);
+        }
+    }
+
+
+
+    private BroadcastReceiver mReceiver = new BroadcastReceiver() {
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (action.equals(ConnectivityManager.CONNECTIVITY_ACTION)) {
+                ConnectivityManager mConnMgr = (ConnectivityManager)
+                        context.getSystemService(Context.CONNECTIVITY_SERVICE);
+                NetworkInfo aActiveInfo = mConnMgr.getActiveNetworkInfo();
+                if (aActiveInfo != null && aActiveInfo.isAvailable()) {
+                    // Network available
+                    int type = aActiveInfo.getType();
+                    if (type == ConnectivityManager.TYPE_WIFI) {
+                        // Wifi available
+                        NetworkInfo wifiInfo = mConnMgr.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+                        mNetworkChangeListener.onNetworkChanged(KsyRecordClient.NETWORK_WIFI);
+                    } else if (type == ConnectivityManager.TYPE_MOBILE) {
+                        // Mobile Network available
+                        NetworkInfo mobileInfo = mConnMgr.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+                        mNetworkChangeListener.onNetworkChanged(KsyRecordClient.NETWORK_MOBILE);
+                    } else {
+                        // Other network
+                    }
+
+                } else {
+                    // Network unavailable
+                    stopRecord();
+                    mNetworkChangeListener.onNetworkChanged(KsyRecordClient.NETWORK_UNAVAILABLE);
+                }
+            }
+        }
+    };
+
+    public KsyRecordClient setOnClientErrorListener(OnClientErrorListener onClientErrorListener) {
+        this.onClientErrorListener = onClientErrorListener;
+        return this;
+    }
+
+    public KsyRecordClient setOrientationActivity(OrientationActivity activity) {
+        this.orientationActivity = activity;
+        return this;
+    }
+
+//    public void setCameraSizeChangedListener(CameraSizeChangeListener listener) {
+//        this.mCameraSizeChangedListener = listener;
+//    }
+
+    public void setNetworkChangeListener(NetworkChangeListener listener) {
+        this.mNetworkChangeListener = listener;
+    }
+
+    public void setPushStreamStateListener(PushStreamStateListener mPushStreamStateListener) {
+        this.mPushStreamStateListener = mPushStreamStateListener;
+    }
+
+    public void setSwitchCameraStateListener(SwitchCameraStateListener mSwitchCameraStateListener) {
+        this.mSwitchCameraStateListener = mSwitchCameraStateListener;
+    }
+
+    public KsyRecordClient setStartListener(StartListener startListener) {
+        this.startListener = startListener;
+        return this;
+    }
+
+    public KsyRecordClient setOnNetworkPoorListener(NetworkMonitor.OnNetworkPoorListener onNetworkPoorListener) {
+        this.onNetworkPoorListener = onNetworkPoorListener;
+        return this;
+    }
+
+
     // Encode using MediaCodec
     // to do
     private void DealWithMediaCodec() {
         Log.d(Constants.LOG_TAG, "DealWithMediaCodec");
 
+        // Video Source
+        if (mVideoSource == null) {
+            mVideoSource = new VideoSourceEncoder(mCamera, mConfig, mSurfaceView, mRecordHandler, mContext);
+            mVideoSource.setOnClientErrorListener(this);
+            mVideoSource.start();
+        }
+
+        // Audio Source
+        if (mAudioSource == null) {
+            mAudioSource = new RecoderAudioSource(mConfig, mRecordHandler, mContext);
+            mAudioSource.setOnClientErrorListener(this);
+            mAudioSource.start();
+        }
     }
 
     // Encode using WebRTC
@@ -475,7 +521,9 @@ public class KsyRecordClient implements KsyRecord, OnClientErrorListener {
 
     private int judgeEncodeMode(Context context) {
         // to do
-        return Constants.ENCODE_MODE_MEDIA_RECORDER;
+        //return Constants.ENCODE_MODE_MEDIA_RECORDER;
+
+        return Constants.ENCODE_MODE_MEDIA_CODEC;
     }
 
 

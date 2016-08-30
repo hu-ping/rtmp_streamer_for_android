@@ -74,7 +74,8 @@ public class RecoderVideoSource extends KsyMediaSource implements MediaRecorder.
     public static long startVideoTime;
 
 
-    public RecoderVideoSource(Camera mCamera, KsyRecordClientConfig mConfig, SurfaceView mSurfaceView, KsyRecordClient.RecordHandler mRecordHandler, Context mContext) {
+    public RecoderVideoSource(Camera mCamera, KsyRecordClientConfig mConfig, SurfaceView mSurfaceView,
+                              KsyRecordClient.RecordHandler mRecordHandler, Context mContext) {
         this.mCamera = mCamera;
         this.mConfig = mConfig;
         mRecorder = new MediaRecorder();
@@ -321,12 +322,12 @@ public class RecoderVideoSource extends KsyMediaSource implements MediaRecorder.
     }
 
     private void makeFlvFrame(int type) {
-        ts = sync.getTime();
+        timeStamp = sync.getTime();
         videoExtraSize = 5;
         int frameTotalLength;
         int degree = mConfig.getRecordOrientation();
         if (type == FRAME_TYPE_SPS) {
-            ts = 0;
+            timeStamp = 0;
             frameTotalLength = FRAME_DEFINE_HEAD_LENGTH + length + videoExtraSize + FRAME_DEFINE_FOOTER_LENGTH;
             dataLengthArray = intToByteArray(length + videoExtraSize);
         } else if (degree == 0) {
@@ -341,7 +342,7 @@ public class RecoderVideoSource extends KsyMediaSource implements MediaRecorder.
         flvFrameByteArray[1] = dataLengthArray[0];
         flvFrameByteArray[2] = dataLengthArray[1];
         flvFrameByteArray[3] = dataLengthArray[2];
-        timestampArray = longToByteArray(ts);
+        timestampArray = longToByteArray(timeStamp);
         flvFrameByteArray[4] = timestampArray[1];
         flvFrameByteArray[5] = timestampArray[2];
         flvFrameByteArray[6] = timestampArray[3];
@@ -404,7 +405,7 @@ public class RecoderVideoSource extends KsyMediaSource implements MediaRecorder.
         KSYFlvData ksyVideo = new KSYFlvData();
         ksyVideo.byteBuffer = flvFrameByteArray;
         ksyVideo.size = flvFrameByteArray.length;
-        ksyVideo.dts = (int) ts;
+        ksyVideo.dts = (int) timeStamp;
         ksyVideo.type = 11;
         if (type == FRAME_TYPE_SPS) {
             ksyVideo.frameType = KSYFlvData.NALU_TYPE_IDR;
@@ -418,10 +419,10 @@ public class RecoderVideoSource extends KsyMediaSource implements MediaRecorder.
 
     private byte[] longToByteArray(long ts) {
         byte[] result = new byte[4];
-//        result[0] = new Long(ts >> 56 & 0xff).byteValue();
-//        result[1] = new Long(ts >> 48 & 0xff).byteValue();
-//        result[2] = new Long(ts >> 40 & 0xff).byteValue();
-//        result[3] = new Long(ts >> 32 & 0xff).byteValue();
+//        result[0] = new Long(timeStamp >> 56 & 0xff).byteValue();
+//        result[1] = new Long(timeStamp >> 48 & 0xff).byteValue();
+//        result[2] = new Long(timeStamp >> 40 & 0xff).byteValue();
+//        result[3] = new Long(timeStamp >> 32 & 0xff).byteValue();
         result[0] = new Long(ts >> 24 & 0xff).byteValue();
         result[1] = new Long(ts >> 16 & 0xff).byteValue();
         result[2] = new Long(ts >> 8 & 0xff).byteValue();

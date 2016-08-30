@@ -9,6 +9,7 @@ public class KSYFlvData {
     public final static int FLV_TYTPE_AUDIO = 12;
     public final static int NALU_TYPE_IDR = 5;
 
+    public long currentTimeMs;
 
     public int dts;//解码时间戳
 
@@ -20,8 +21,18 @@ public class KSYFlvData {
 
     public int frameType;
 
+    public boolean iFrameFlag = false;
+
     public boolean isKeyframe() {
         return frameType == NALU_TYPE_IDR;
+    }
+
+    public boolean isIframe() {
+        if (isKeyframe()) {
+            return true;
+        }
+
+        return iFrameFlag;
     }
 
 }

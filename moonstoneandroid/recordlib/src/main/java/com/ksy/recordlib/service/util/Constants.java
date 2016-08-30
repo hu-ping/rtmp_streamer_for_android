@@ -4,11 +4,12 @@ package com.ksy.recordlib.service.util;
  * Created by eflakemac on 15/6/17.
  */
 public class Constants {
-    public static final String LOG_TAG = "ksy-record-sdk";
+    public static final String LOG_TAG = "MOON";
     //    public static final String URL_DEFAULT = "rtmp://xiaoyi.uplive.ksyun.com:80/live/hansen2?public=1&expire=1710333230&nonce=12341234&accesskey=2HITWMQXL2VBB3XMAEHQ&signature=1wgD2F56CDUizTp0%2fj3DJ%2fasSsY%3d";
 //    public static final String URL_DEFAULT = "rtmp://115.231.96.121:80/live/hansen223?public=1&expire=1710333230&nonce=12341234&accesskey=2HITWMQXL2VBB3XMAEHQ&signature=1wgD2F56CDUizTp0%2fj3DJ%2fasSsY%3d";
 //    public static final String URL_DEFAULT = "rtmp://180.76.140.24/live/eflaketest";
-    public static final String URL_DEFAULT = "rtmp://101.200.132.74/live/livestream";
+//    public static final String URL_DEFAULT = "rtmp://101.200.132.74/live/livestream";
+    public static final String URL_DEFAULT = "rtmp://live.ws.jumei.com/testing/a24";
     //    public static final String URL_DEFAULT = "rtmp://rtmpup3.plu.cn/live/8ccdd0d6f7004b79a36ad0d6e5919c0e?signature=6fyn4cqpcSDMN7gUtyrk1ctejx0%253d&accesskey=yX5ga7SZ%252fKoMV97kiihh&expire=1445410211&nonce=b3f3b93b4387455e9c283842f71d0d3f&public=0&vdoid=432168_8ccdd0d6f7004b79a36ad0d6e5919c0e_1444805411";
     //    public static final String URL_DEFAULT = "rtmp://rtmpup3.plu.cn/live/8ccdd0d6f7004b79a36ad0d6e5919c0e?signature=oyohVdEUVexbaRw%2bYSyFOy9YVAk%3d&accesskey=yX5ga7SZ%2fKoMV97kiihh&expire=1444730864&nonce=c15ff6e00a1142eebce5014c648de5a3&public=0&vdoid=432168_8ccdd0d6f7004b79a36ad0d6e5919c0e_1444727264";
 //        public static final String URL_DEFAULT = "rtmp://rtmpup2.plu.cn/longzhu/55fd569ffb16df2b9300106f?key=dcc3e4f5fff141ac9907ba984b76e777144293261214430070";
@@ -45,15 +46,29 @@ public class Constants {
     public static final int CONFIG_CAMERA_TYPE_BACK = 0;
     public static final int CONFIG_CAMERA_TYPE_FRONT = 1;
 
+    public static final int CONFIG_VIDEO_BITRATE_150K = 150 * 1000;
+    public static final int CONFIG_VIDEO_BITRATE_200K = 200 * 1000;
     public static final int CONFIG_VIDEO_BITRATE_250K = 250 * 1000;
+    public static final int CONFIG_VIDEO_BITRATE_300K = 300 * 1000;
+    public static final int CONFIG_VIDEO_BITRATE_350K = 350 * 1000;
+    public static final int CONFIG_VIDEO_BITRATE_400K = 400 * 1000;
+    public static final int CONFIG_VIDEO_BITRATE_450K = 450 * 1000;
     public static final int CONFIG_VIDEO_BITRATE_500K = 500 * 1000;
+    public static final int CONFIG_VIDEO_BITRATE_550K = 550 * 1000;
+    public static final int CONFIG_VIDEO_BITRATE_600K = 600 * 1000;
+    public static final int CONFIG_VIDEO_BITRATE_650K = 650 * 1000;
+    public static final int CONFIG_VIDEO_BITRATE_700K = 700 * 1000;
     public static final int CONFIG_VIDEO_BITRATE_750K = 750 * 1000;
+    public static final int CONFIG_VIDEO_BITRATE_800K = 800 * 1000;
+    public static final int CONFIG_VIDEO_BITRATE_850K = 850 * 1000;
+    public static final int CONFIG_VIDEO_BITRATE_900K = 900 * 1000;
     public static final int CONFIG_VIDEO_BITRATE_1000K = 1000 * 1000;
     public static final int CONFIG_VIDEO_BITRATE_1500K = 1500 * 1000;
 
     public static final int CONFIG_VIDEO_FRAME_RATE_10 = 10;
     public static final int CONFIG_VIDEO_FRAME_RATE_15 = 15;
     public static final int CONFIG_VIDEO_FRAME_RATE_21 = 21;
+    public static final int CONFIG_VIDEO_FRAME_RATE_25 = 25;
     public static final int CONFIG_VIDEO_FRAME_RATE_30 = 30;
 
     public static final String NETWORK_STATE_CHANGED = "net_work_changed";

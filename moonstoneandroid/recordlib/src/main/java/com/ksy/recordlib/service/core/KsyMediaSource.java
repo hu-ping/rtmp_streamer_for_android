@@ -18,7 +18,7 @@ public abstract class KsyMediaSource implements Runnable {
     protected FileInputStream is;
     protected FileChannel inputChannel;
     protected byte[] header = new byte[4];
-    protected long ts = 0;
+    protected long timeStamp = 0;
     protected static ClockSync sync = new ClockSync();
     protected OnClientErrorListener onClientErrorListener;
     protected boolean mRunning = false;
@@ -66,7 +66,7 @@ public abstract class KsyMediaSource implements Runnable {
         private long lastSysTime = 0;
         private int avDistance = 0;
         private boolean inited = false;
-        private double lastTS = 0;
+        private double lastTimeStamp = 0;
         public String lastMessage;
         long average = 0;
         private boolean forceSyncFlag = false;
@@ -79,9 +79,9 @@ public abstract class KsyMediaSource implements Runnable {
                 frameSumCount = 10000;
                 frameSumDuration = frameSumCount * 33;
                 lastSysTime = System.currentTimeMillis();
-//                lastTS = 0;
+//                lastTimeStamp = 0;
                 inited = true;
-                lastTS = 0;
+                lastTimeStamp = 0;
             } else {
                 long currentTime = System.currentTimeMillis();
                 d = currentTime - lastSysTime;
@@ -94,21 +94,21 @@ public abstract class KsyMediaSource implements Runnable {
                     //audio's DTS large than video's DTS so send video quickly ,delta--
                     delta = (long) (1f / MAX_DISTANCE_TIME * avDistance);
                     if (avDistance > 10000 || avDistance < -10000) {
-                        Log.d(Constants.LOG_TAG, "lastdts = " + lastTS);
+                        Log.d(Constants.LOG_TAG, "lastdts = " + lastTimeStamp);
                         Log.d(Constants.LOG_TAG, "avDistance = " + avDistance);
-                        lastTS += avDistance;
+                        lastTimeStamp += avDistance;
                         avDistance = 0;
                     }
                 }
                 if (average + delta <= 0) {
-                    Log.d(Constants.LOG_TAG, "sync: average + delta <= 0" + lastTS);
-                    lastTS += 1;
+                    Log.d(Constants.LOG_TAG, "sync: average + delta <= 0" + lastTimeStamp);
+                    lastTimeStamp += 1;
                 } else {
-                    lastTS += (average + delta);
+                    lastTimeStamp += (average + delta);
                 }
             }
-            lastMessage = String.format("sync: avDis=%d delta=%d lastTs=%.1f avg=%d", avDistance, delta, lastTS, average);
-            return (long) lastTS;
+            lastMessage = String.format("sync: avDis=%d delta=%d lastTs=%.1f avg=%d", avDistance, delta, lastTimeStamp, average);
+            return (long) lastTimeStamp;
         }
 
         public void clear() {
@@ -117,7 +117,7 @@ public abstract class KsyMediaSource implements Runnable {
 
         public void setAvDistance(int avDistance) {
             if (forceSyncFlag) {
-                lastTS += avDistance;
+                lastTimeStamp += avDistance;
                 KsyRecordSender.getRecordInstance().clearData();
                 forceSyncFlag = false;
             } else {
@@ -125,8 +125,8 @@ public abstract class KsyMediaSource implements Runnable {
             }
         }
 
-        public void resetTs(int ts) {
-            lastTS = ts;
+        public void resetTimeStamp(int ts) {
+            lastTimeStamp = ts;
             this.avDistance = 0;
         }
 

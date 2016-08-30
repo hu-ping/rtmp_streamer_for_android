@@ -14,6 +14,7 @@ import com.ksy.recordlib.service.core.KsyRecordClientConfig;
 import com.ksy.recordlib.service.core.KsyRecordSender;
 import com.ksy.recordlib.service.util.Constants;
 import com.ksy.recordlib.service.util.OnClientErrorListener;
+import com.ksy.recordlib.service.util.TimeStampCreator;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -197,14 +198,16 @@ public class RecoderAudioSource extends KsyMediaSource implements MediaRecorder.
                 frame_length = frame_content.length;
             }
             // make flv
-            ts += delay;
+//            timeStamp += delay;
+            timeStamp = TimeStampCreator.getTimeStampCreator().createAbsoluteTimestamp();
+
             flvFrameByteArray = new byte[FRAME_DEFINE_HEAD_LENGTH + frame_length + videoExtraSize + FRAME_DEFINE_FOOTER_LENGTH];
             flvFrameByteArray[0] = (byte) FRAME_DEFINE_TYPE_AUDIO;
             dataLengthArray = intToByteArray(frame_length + videoExtraSize);
             flvFrameByteArray[1] = dataLengthArray[0];
             flvFrameByteArray[2] = dataLengthArray[1];
             flvFrameByteArray[3] = dataLengthArray[2];
-            timestampArray = longToByteArray(ts);
+            timestampArray = longToByteArray(timeStamp);
             flvFrameByteArray[4] = timestampArray[1];
             flvFrameByteArray[5] = timestampArray[2];
             flvFrameByteArray[6] = timestampArray[3];
@@ -241,9 +244,10 @@ public class RecoderAudioSource extends KsyMediaSource implements MediaRecorder.
 
             //添加音频数据到队列
             KSYFlvData ksyAudio = new KSYFlvData();
+            ksyAudio.currentTimeMs = System.currentTimeMillis();
             ksyAudio.byteBuffer = flvFrameByteArray;
             ksyAudio.size = flvFrameByteArray.length;
-            ksyAudio.dts = (int) ts;
+            ksyAudio.dts = (int) timeStamp;
             ksyAudio.type = 12;
             ksyRecordSender.addToQueue(ksyAudio, FROM_AUDIO_DATA);
             isSpecialFrame = false;
@@ -269,10 +273,10 @@ public class RecoderAudioSource extends KsyMediaSource implements MediaRecorder.
 
     private byte[] longToByteArray(long ts) {
         byte[] result = new byte[4];
-//        result[0] = new Long(ts >> 56 & 0xff).byteValue();
-//        result[1] = new Long(ts >> 48 & 0xff).byteValue();
-//        result[2] = new Long(ts >> 40 & 0xff).byteValue();
-//        result[3] = new Long(ts >> 32 & 0xff).byteValue();
+//        result[0] = new Long(timeStamp >> 56 & 0xff).byteValue();
+//        result[1] = new Long(timeStamp >> 48 & 0xff).byteValue();
+//        result[2] = new Long(timeStamp >> 40 & 0xff).byteValue();
+//        result[3] = new Long(timeStamp >> 32 & 0xff).byteValue();
         result[0] = new Long(ts >> 24 & 0xff).byteValue();
         result[1] = new Long(ts >> 16 & 0xff).byteValue();
         result[2] = new Long(ts >> 8 & 0xff).byteValue();

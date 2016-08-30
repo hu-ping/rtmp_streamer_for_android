@@ -248,7 +248,7 @@ public class KSYFlv {
 
         // when sps or pps changed, update the sequence header,
         // for the pps maybe not changed while sps changed.
-        // so, we must check when each video ts message frame parsed.
+        // so, we must check when each video timeStamp message frame parsed.
         if (h264_sps_pps_sent && !h264_sps_changed && !h264_pps_changed) {
             return;
         }

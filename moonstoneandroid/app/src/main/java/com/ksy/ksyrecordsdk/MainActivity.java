@@ -3,11 +3,9 @@ package com.ksy.ksyrecordsdk;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.res.Configuration;
 import android.hardware.Camera;
 import android.media.CamcorderProfile;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.DrawerLayout;
@@ -18,6 +16,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.SurfaceView;
 import android.view.TextureView;
 import android.view.View;
 import android.view.WindowManager;
@@ -45,8 +44,10 @@ import java.util.TimerTask;
 public class MainActivity extends AppCompatActivity implements OrientationActivity, KsyRecordClient.NetworkChangeListener, KsyRecordClient.PushStreamStateListener, KsyRecordClient.SwitchCameraStateListener, KsyRecordClient.StartListener, OnClientErrorListener {
 
     private static final boolean DEBUG = true;
-    private static final String TAG = "MainActivity";
+
     private TextureView mSurfaceView;
+//    private SurfaceView mSurfaceView;
+
     private FloatingActionButton mFab, change, flashlight;
     private boolean mRecording = false;
     private KsyRecordClient client;                        //core
@@ -120,9 +121,9 @@ public class MainActivity extends AppCompatActivity implements OrientationActivi
                 changeCamera();
             }
         });
-        setupSurfaceView();
+        initSurfaceView();
         setUpEnvironment();
-        initDrawer();
+//        initDrawer();
         startBitrateTimer();
     }
 
@@ -222,8 +223,11 @@ public class MainActivity extends AppCompatActivity implements OrientationActivi
         config = builder.build();
     }
 
-    private void setupSurfaceView() {
+    private void initSurfaceView() {
         mSurfaceView = (TextureView) findViewById(R.id.textureview);
+
+//        mSurfaceView = (SurfaceView)findViewById(R.id.surface_preview);
+
 //        SurfaceHolder holder = mSurfaceView.getHolder();
 //        // setType must be set in old version, otherwise may cause crash
 //        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
@@ -318,7 +322,7 @@ public class MainActivity extends AppCompatActivity implements OrientationActivi
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
-        drawerToggle.syncState();
+//        drawerToggle.syncState();
     }
 
     @Override
@@ -385,7 +389,7 @@ public class MainActivity extends AppCompatActivity implements OrientationActivi
 
     private void showToast(String text) {
         Toast.makeText(MainActivity.this, text, Toast.LENGTH_SHORT).show();
-        Log.d(TAG, text);
+        Log.d(Constants.LOG_TAG, text);
     }
 
     @Override

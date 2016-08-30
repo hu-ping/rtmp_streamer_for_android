@@ -33,13 +33,12 @@ public class KsyRecordClientConfig {
     public static int recordOrientation;
     public static int previewOrientation;
 
+    // http://developer.android.com/reference/android/media/MediaCodec.html#createByCodecName(java.lang.String)
+    private String videoCodec = "video/avc";
+    private int videoGop = 5;
+
     String mUrl;
-
     OrientationActivity orientationActivity;
-
-    public int getRecordOrientation() {
-        return recordOrientation;
-    }
 
     public KsyRecordClientConfig(Builder builder) {
         mCameraType = builder.mCameraType;
@@ -76,9 +75,19 @@ public class KsyRecordClientConfig {
             }
         }
         mVideoFrameRate = builder.mVideoFrameRate;
+//        videoGop = mVideoFrameRate;
+
         mVideoBitRate = builder.mVideoBitRate;
         mVideoWidth = builder.mVideoWidth > 0 ? builder.mVideoWidth : mVideoWidth;
         mVideoHeight = builder.mVideoHeigh > 0 ? builder.mVideoHeigh : mVideoHeight;
+    }
+
+    public int getVideoGop() {
+        return videoGop;
+    }
+
+    public String getVideoCodec() {
+        return videoCodec;
     }
 
     public int getCameraType() {
@@ -127,6 +136,43 @@ public class KsyRecordClientConfig {
 
     public int getVideoProfile() {
         return mVideoProfile;
+    }
+
+    public int getRecordOrientation() {
+        return recordOrientation;
+    }
+
+    public int updateRecordOrientation() {
+        int cameraId = -1;
+
+        if (mVideoProfile >= 0) {
+
+            int numberOfCameras = Camera.getNumberOfCameras();
+            if (numberOfCameras > 0) {
+                Camera.CameraInfo cameraInfo = new Camera.CameraInfo();
+                for (int i = 0; i < numberOfCameras; i++) {
+                    Camera.getCameraInfo(i, cameraInfo);
+                    if (cameraInfo.facing == mCameraType) {
+                        cameraId = i;
+                        break;
+                    }
+                }
+            }
+            if (cameraId < 0) {
+                throw new IllegalArgumentException("camera unsupported quality level");
+            }
+        }
+
+        if (orientationActivity != null) {
+            int previewDegree = CameraUtil.getDisplayOrientation(orientationActivity.getActivity(),
+                    cameraId, mCameraType == Camera.CameraInfo.CAMERA_FACING_FRONT);
+            recordOrientation = CameraUtil.getMediaRecordRotation(previewDegree,
+                    orientationActivity.getOrientation(), mCameraType == Camera.CameraInfo.CAMERA_FACING_FRONT);
+        } else {
+            recordOrientation = 90;
+        }
+
+        return recordOrientation;
     }
 
     public String getUrl() {
@@ -219,6 +265,12 @@ public class KsyRecordClientConfig {
             mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
         }
         mediaRecorder.setVideoEncoder(mVideoEncoder);
+
+        // Step 3: 设置一个CamcorderProfile (requires API Level 8 or higher)
+        //mediaRecorder.setProfile(CamcorderProfile.get(CamcorderProfile.QUALITY_TIME_LAPSE_HIGH));
+        // Step 5.5: 设置视频帧率为一个低数
+        //mediaRecorder.setCaptureRate(5f); // 每１０秒获取一帧
+
         int cameraId = -1;
         if (mVideoProfile >= 0) {
 
@@ -252,9 +304,12 @@ public class KsyRecordClientConfig {
         if (mVideoWidth > 0 && mVideoHeight > 0) {
             mediaRecorder.setVideoSize(mVideoWidth, mVideoHeight);
         }
+
         if (orientationActivity != null) {
-            int previewDegree = CameraUtil.getDisplayOrientation(orientationActivity.getActivity(), cameraId, mCameraType == Camera.CameraInfo.CAMERA_FACING_FRONT);
-            recordOrientation = CameraUtil.getMediaRecordRotation(previewDegree, orientationActivity.getOrientation(), mCameraType == Camera.CameraInfo.CAMERA_FACING_FRONT);
+            int previewDegree = CameraUtil.getDisplayOrientation(orientationActivity.getActivity(),
+                    cameraId, mCameraType == Camera.CameraInfo.CAMERA_FACING_FRONT);
+            recordOrientation = CameraUtil.getMediaRecordRotation(previewDegree,
+                    orientationActivity.getOrientation(), mCameraType == Camera.CameraInfo.CAMERA_FACING_FRONT);
         } else {
             recordOrientation = 90;
         }
@@ -263,15 +318,18 @@ public class KsyRecordClientConfig {
 
     public static class Builder {
         private int mCameraType = Constants.CONFIG_CAMERA_TYPE_BACK;
+
+//        private int mCameraType = Constants.CONFIG_CAMERA_TYPE_FRONT;
+
         private int mVoiceType = Constants.CONFIG_VOICE_TYPE_MIC;
         private int mAudioSampleRate = Constants.CONFIG_AUDIO_SAMPLERATE_44100;
         private int mAudioBitRate = Constants.CONFIG_AUDIO_BITRATE_32K;
         private int mAudioEncorder = MediaRecorder.AudioEncoder.AAC;
-        private int mVideoFrameRate = Constants.CONFIG_VIDEO_FRAME_RATE_30;
+        private int mVideoFrameRate = Constants.CONFIG_VIDEO_FRAME_RATE_25;
         private int mVideoBitRate = Constants.CONFIG_VIDEO_BITRATE_750K;
         private int mDropFrameFrequency = 0;
-        private int mVideoWidth;
-        private int mVideoHeigh;
+        private int mVideoWidth = 640;
+        private int mVideoHeigh = 480;
         private int mVideoEncorder = MediaRecorder.VideoEncoder.H264;
         private int mVideoProfile = -1;
         private String mUrl;

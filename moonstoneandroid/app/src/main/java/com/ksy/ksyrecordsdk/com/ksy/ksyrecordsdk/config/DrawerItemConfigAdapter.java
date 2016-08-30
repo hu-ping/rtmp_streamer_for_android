@@ -104,14 +104,22 @@ public class DrawerItemConfigAdapter {
         ConfigItem videoBitrate = new ConfigItem();
         videoBitrate.index = 3;
         videoBitrate.configName = context.getString(R.string.video_bitrate);
-        videoBitrate.configValue = new int[]{Constants.CONFIG_VIDEO_BITRATE_250K, Constants.CONFIG_VIDEO_BITRATE_500K, Constants.CONFIG_VIDEO_BITRATE_750K, Constants.CONFIG_VIDEO_BITRATE_1000K, Constants.CONFIG_VIDEO_BITRATE_1500K};
+        videoBitrate.configValue = new int[]{
+                Constants.CONFIG_VIDEO_BITRATE_250K,
+                Constants.CONFIG_VIDEO_BITRATE_500K,
+                Constants.CONFIG_VIDEO_BITRATE_750K,
+                Constants.CONFIG_VIDEO_BITRATE_1000K,
+                Constants.CONFIG_VIDEO_BITRATE_1500K};
         videoBitrate.configValueName = new String[]{"250K", "500K", "750K", "1000K", "1500K"};
         items.add(videoBitrate);
 
         ConfigItem audioBitrate = new ConfigItem();
         audioBitrate.index = 4;
         audioBitrate.configName = context.getString(R.string.audio_bitrate);
-        audioBitrate.configValue = new int[]{Constants.CONFIG_AUDIO_BITRATE_32K, Constants.CONFIG_AUDIO_BITRATE_48K, Constants.CONFIG_AUDIO_BITRATE_64K};
+        audioBitrate.configValue = new int[]{
+                Constants.CONFIG_AUDIO_BITRATE_32K,
+                Constants.CONFIG_AUDIO_BITRATE_48K,
+                Constants.CONFIG_AUDIO_BITRATE_64K};
         audioBitrate.configValueName = new String[]{"32K", "48K", "64K"};
         items.add(audioBitrate);
 
