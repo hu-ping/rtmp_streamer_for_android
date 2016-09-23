@@ -9,7 +9,10 @@ public class Constants {
 //    public static final String URL_DEFAULT = "rtmp://115.231.96.121:80/live/hansen223?public=1&expire=1710333230&nonce=12341234&accesskey=2HITWMQXL2VBB3XMAEHQ&signature=1wgD2F56CDUizTp0%2fj3DJ%2fasSsY%3d";
 //    public static final String URL_DEFAULT = "rtmp://180.76.140.24/live/eflaketest";
 //    public static final String URL_DEFAULT = "rtmp://101.200.132.74/live/livestream";
+
     public static final String URL_DEFAULT = "rtmp://live.ws.jumei.com/testing/a24";
+//    public static final String URL_DEFAULT = "rtmp://video-center.alivecdn.com/jmlive/testing24?vhost=live.ali.jumei.com";
+
     //    public static final String URL_DEFAULT = "rtmp://rtmpup3.plu.cn/live/8ccdd0d6f7004b79a36ad0d6e5919c0e?signature=6fyn4cqpcSDMN7gUtyrk1ctejx0%253d&accesskey=yX5ga7SZ%252fKoMV97kiihh&expire=1445410211&nonce=b3f3b93b4387455e9c283842f71d0d3f&public=0&vdoid=432168_8ccdd0d6f7004b79a36ad0d6e5919c0e_1444805411";
     //    public static final String URL_DEFAULT = "rtmp://rtmpup3.plu.cn/live/8ccdd0d6f7004b79a36ad0d6e5919c0e?signature=oyohVdEUVexbaRw%2bYSyFOy9YVAk%3d&accesskey=yX5ga7SZ%2fKoMV97kiihh&expire=1444730864&nonce=c15ff6e00a1142eebce5014c648de5a3&public=0&vdoid=432168_8ccdd0d6f7004b79a36ad0d6e5919c0e_1444727264";
 //        public static final String URL_DEFAULT = "rtmp://rtmpup2.plu.cn/longzhu/55fd569ffb16df2b9300106f?key=dcc3e4f5fff141ac9907ba984b76e777144293261214430070";
@@ -67,6 +70,7 @@ public class Constants {
 
     public static final int CONFIG_VIDEO_FRAME_RATE_10 = 10;
     public static final int CONFIG_VIDEO_FRAME_RATE_15 = 15;
+    public static final int CONFIG_VIDEO_FRAME_RATE_20 = 20;
     public static final int CONFIG_VIDEO_FRAME_RATE_21 = 21;
     public static final int CONFIG_VIDEO_FRAME_RATE_25 = 25;
     public static final int CONFIG_VIDEO_FRAME_RATE_30 = 30;

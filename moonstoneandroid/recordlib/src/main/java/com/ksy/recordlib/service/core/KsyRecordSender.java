@@ -439,7 +439,6 @@ public class KsyRecordSender implements Throughput{
         }
     }
 
-    int dropCount = 0;
     private void removeToNextIFrame(LinkedList<KSYFlvData> recordPQueue) {
 
         if (recordPQueue.size() > 0) {

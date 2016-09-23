@@ -1,16 +1,25 @@
 package com.ksy.ksyrecordsdk;
 
+import android.Manifest;
+import android.animation.Animator;
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.graphics.Point;
 import android.hardware.Camera;
 import android.media.CamcorderProfile;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -22,6 +31,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -33,10 +43,14 @@ import com.ksy.recordlib.service.core.KsyRecordClient;
 import com.ksy.recordlib.service.core.KsyRecordClientConfig;
 import com.ksy.recordlib.service.core.KsyRecordSender;
 import com.ksy.recordlib.service.exception.KsyRecordException;
+import com.ksy.recordlib.service.magicfilter.MagicEngine;
+import com.ksy.recordlib.service.magicfilter.utils.MagicParams;
+import com.ksy.recordlib.service.magicfilter.widget.MagicCameraView;
 import com.ksy.recordlib.service.util.Constants;
 import com.ksy.recordlib.service.util.OnClientErrorListener;
 import com.ksy.recordlib.service.util.OrientationActivity;
 import com.ksy.recordlib.service.util.OrientationObserver;
+import com.ksy.recordlib.service.util.RtmfpCrashHandler;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -64,13 +78,24 @@ public class MainActivity extends AppCompatActivity implements OrientationActivi
     private boolean isFirstEnter = true;
     private boolean flash = true;
 
+    private MagicEngine magicEngine;
+    private LinearLayout mFilterLayout;
+    private RecyclerView mFilterListView;
+//    private FilterAdapter mAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d(Constants.LOG_TAG, "onCreate");
-
         setContentView(R.layout.activity_main);
+
+        RtmfpCrashHandler crashHandler = RtmfpCrashHandler.getInstance();
+        crashHandler.init(getApplicationContext()); //在Appliction里面设置我们的异常处理器为UncaughtExceptionHandler处理器
+
+        MagicEngine.Builder builder = new MagicEngine.Builder();
+        magicEngine = builder
+                .build((MagicCameraView)findViewById(R.id.glsurfaceview_camera));
+
         initWidget();
         setupRecord();
         initOrientationSensor();
@@ -82,17 +107,6 @@ public class MainActivity extends AppCompatActivity implements OrientationActivi
             orientationObserver.enable();
         }
         client.registerNetworkMonitor();
-    }
-
-
-    private void initOrientationSensor() {
-        orientationObserver = new OrientationObserver(this) {
-            @Override
-            public void onOrientationChangedEvent(int orientation) {
-                MainActivity.this.orientation = (((orientation + 45) / 90) * 90) % 360;
-//                Log.e("MainActivity", "orientation=" + orientation);
-            }
-        };
     }
 
     private void initWidget() {
@@ -125,6 +139,95 @@ public class MainActivity extends AppCompatActivity implements OrientationActivi
         setUpEnvironment();
 //        initDrawer();
         startBitrateTimer();
+
+        Point screenSize = new Point();
+        getWindowManager().getDefaultDisplay().getSize(screenSize);
+        MagicCameraView cameraView = (MagicCameraView)findViewById(R.id.glsurfaceview_camera);
+        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) cameraView.getLayoutParams();
+        params.width = screenSize.x;
+        params.height = screenSize.x * 4 / 3;
+        cameraView.setLayoutParams(params);
+
+//        mFilterLayout = (LinearLayout)findViewById(R.id.layout_filter);
+//        mFilterListView = (RecyclerView) findViewById(R.id.filter_listView);
+        findViewById(R.id.btn_camera_beauty).setOnClickListener(btn_listener);
+        findViewById(R.id.btn_camera_filter).setOnClickListener(btn_listener);
+
+//        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+//        linearLayoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
+//        mFilterListView.setLayoutManager(linearLayoutManager);
+//
+//        mAdapter = new FilterAdapter(this, types);
+//        mFilterListView.setAdapter(mAdapter);
+//        mAdapter.setOnFilterChangeListener(onFilterChangeListener);
+//
+//        animator = ObjectAnimator.ofFloat(btn_shutter,"rotation",0,360);
+//        animator.setDuration(500);
+//        animator.setRepeatCount(ValueAnimator.INFINITE);
+    }
+
+    private View.OnClickListener btn_listener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            switch (v.getId()){
+                case R.id.btn_camera_filter:
+                    showFilters();
+                    break;
+
+                case R.id.btn_camera_beauty:
+                    new AlertDialog.Builder(MainActivity.this)
+                            .setSingleChoiceItems(new String[] { "关闭", "1", "2", "3", "4", "5"}, MagicParams.beautyLevel,
+                                    new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            magicEngine.setBeautyLevel(which);
+                                            dialog.dismiss();
+                                        }
+                                    })
+                            .setNegativeButton("取消", null)
+                            .show();
+                    break;
+            }
+        }
+    };
+
+    private void showFilters(){
+        ObjectAnimator animator = ObjectAnimator.ofFloat(mFilterLayout, "translationY", mFilterLayout.getHeight(), 0);
+        animator.setDuration(200);
+        animator.addListener(new Animator.AnimatorListener() {
+
+            @Override
+            public void onAnimationStart(Animator animation) {
+//                findViewById(R.id.btn_camera_shutter).setClickable(false);
+
+                mFilterLayout.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+
+            }
+        });
+        animator.start();
+    }
+
+    private void initOrientationSensor() {
+        orientationObserver = new OrientationObserver(this) {
+            @Override
+            public void onOrientationChangedEvent(int orientation) {
+                MainActivity.this.orientation = (((orientation + 45) / 90) * 90) % 360;
+//                Log.e("MainActivity", "orientation=" + orientation);
+            }
+        };
     }
 
     private void startBitrateTimer() {
@@ -224,7 +327,7 @@ public class MainActivity extends AppCompatActivity implements OrientationActivi
     }
 
     private void initSurfaceView() {
-        mSurfaceView = (TextureView) findViewById(R.id.textureview);
+//        mSurfaceView = (TextureView) findViewById(R.id.textureview);
 
 //        mSurfaceView = (SurfaceView)findViewById(R.id.surface_preview);
 
@@ -254,10 +357,13 @@ public class MainActivity extends AppCompatActivity implements OrientationActivi
             mRecording = false;
             showToast("已停止");
         }
+
+        magicEngine.stopRecord();
     }
 
     private void startRecord() {
         Log.d(Constants.LOG_TAG, "startRecord..");
+
         try {
             client.startRecord();
             mRecording = true;
@@ -266,6 +372,10 @@ public class MainActivity extends AppCompatActivity implements OrientationActivi
             e.printStackTrace();
             Log.d(Constants.LOG_TAG, "Client Error, reason = " + e.getMessage());
         }
+
+        magicEngine.setConfig(config);
+        magicEngine.setOnClientErrorListener(this);
+        magicEngine.startRecord();
     }
 
     private void toggleRecord() {
@@ -288,7 +398,9 @@ public class MainActivity extends AppCompatActivity implements OrientationActivi
     }
 
     private void changeCamera() {
-        client.switchCamera();
+//        client.switchCamera();
+
+        magicEngine.switchCamera();
     }
 
     /*

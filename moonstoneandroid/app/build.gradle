@@ -1,13 +1,13 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 22
+    compileSdkVersion 23
     buildToolsVersion "21.1.2"
 
     defaultConfig {
         applicationId "com.ksy.ksyrecordsdk"
         minSdkVersion 16
-        targetSdkVersion 22
+        targetSdkVersion 23
         versionCode 1
         versionName "1.0"
     }
@@ -22,9 +22,14 @@ android {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile 'com.android.support:design:22.2.0'
-    compile 'com.android.support:appcompat-v7:22.2.0'
+//    compile 'com.android.support:design:22.2.0'
+//    compile 'com.android.support:appcompat-v7:22.2.0'
+
+    compile 'com.android.support:appcompat-v7:23.3.0'
+    compile 'com.android.support:design:23.3.0'
+
     compile 'com.heinrichreimersoftware.materialdrawer:library:2.1.2'
     //    compile 'com.github.afollestad:material-dialogs:v0.7.8.0'
     compile project(':recordlib')
+    testCompile 'junit:junit:4.12'
 }

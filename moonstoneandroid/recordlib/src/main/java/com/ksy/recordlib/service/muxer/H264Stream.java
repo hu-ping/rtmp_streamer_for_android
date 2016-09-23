@@ -220,7 +220,7 @@ public class H264Stream {
         while (bb.position() < bi.size) {
             // each frame must prefixed by annexb format.
             // about annexb, @see H.264-AVC-ISO_IEC_14496-10.pdf, page 211.
-            Log.i(Constants.LOG_TAG, "start position:" + bb.position() + " size:" + bi.size);
+//            Log.i(Constants.LOG_TAG, "start position:" + bb.position() + " size:" + bi.size);
             // TODO: 2016/8/22 bb.position()会出现等于25的情况。
             // 虽然打印的内容会包含00 00 00 01的头，因为打印是从bb.get(i) i=0开始的，
             // 但是函数utils.srs_avc_startswith_annexb检测不出来，
@@ -257,10 +257,10 @@ public class H264Stream {
 
             rawFrameBytes.size = bb.position() - pos;
 //            if (bb.position() < bi.size) {
-                Log.i(Constants.LOG_TAG, "position:" + bb.position() + " size:" + bi.size);
-                Log.i(Constants.LOG_TAG, String.format("annexb multiple match ok, pts=%d", bi.presentationTimeUs / 1000));
-                H264Utils.srs_print_bytes(Constants.LOG_TAG, tbbs, 16);
-                H264Utils.srs_print_bytes(Constants.LOG_TAG, bb.slice(), 16);
+//                Log.i(Constants.LOG_TAG, "position:" + bb.position() + " size:" + bi.size);
+//                Log.i(Constants.LOG_TAG, String.format("annexb multiple match ok, pts=%d", bi.presentationTimeUs / 1000));
+//                H264Utils.srs_print_bytes(Constants.LOG_TAG, tbbs, 16);
+//                H264Utils.srs_print_bytes(Constants.LOG_TAG, bb.slice(), 16);
 //            }
             //Log.i(TAG, String.format("annexb match %d bytes", tbb.size));
             break;

@@ -77,6 +77,21 @@ public class FlvTagMuxer implements Muxer {
     }
 
     @Override
+    public void start() throws IOException {
+
+    }
+
+    @Override
+    public void stop() {
+
+    }
+
+    @Override
+    public void release() {
+
+    }
+
+    @Override
     public void writeSampleData(int trackIndex, ByteBuffer byteBuf, MediaCodec.BufferInfo bufferInfo) throws Exception {
 //        Log.i(Constants.LOG_TAG, String.format("dumps the %s stream %dB, pts=%d",
 //                (trackIndex == VIDEO_TRACK) ? "Vdieo" : "Audio", bufferInfo.size, bufferInfo.presentationTimeUs / 1000));
@@ -103,8 +118,8 @@ public class FlvTagMuxer implements Muxer {
 
         ArrayList<RawFrameBytes> ibps = new ArrayList<RawFrameBytes>();
         int frame_type = CodecVideoAVCFrame.InterFrame;
-        Log.i(Constants.LOG_TAG, String.format("video %d/%d bytes, offset=%d, position=%d, pts=%d",
-                bb.remaining(), bi.size, bi.offset, bb.position(), pts));
+//        Log.i(Constants.LOG_TAG, String.format("video %d/%d bytes, offset=%d, position=%d, pts=%d",
+//                bb.remaining(), bi.size, bi.offset, bb.position(), pts));
 
         // send each frame.
         while (bb.position() < bi.size) {
@@ -134,14 +149,14 @@ public class FlvTagMuxer implements Muxer {
                 continue;
             }
 
-//            Log.i(Constants.LOG_TAG, "isiFrame:" + isiFrame);
-//            encodeCount++;
-//            if (bi.flags != 0) {
-//                Log.e(Constants.LOG_TAG, "flags:" + bi.flags
-//                        + ", nal_unit_type:" + nal_unit_type
-//                        + ", count:" + encodeCount);
-//                encodeCount = 0;
-//            }
+            Log.i(Constants.LOG_TAG, "isiFrame:" + isiFrame);
+            encodeCount++;
+            if (bi.flags != 0) {
+                Log.e(Constants.LOG_TAG, "flags:" + bi.flags
+                        + ", nal_unit_type:" + nal_unit_type
+                        + ", count:" + encodeCount);
+                encodeCount = 0;
+            }
 
             // for sps
             if (avc.is_sps(frame)) {

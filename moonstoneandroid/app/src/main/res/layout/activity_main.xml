@@ -7,6 +7,33 @@
     android:fitsSystemWindows="true"
     tools:context=".MainActivity">
 
+    <!--<FrameLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content">-->
+        <!--<LinearLayout-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_gravity="bottom"-->
+            <!--android:layout_height="120.0dip"-->
+            <!--android:paddingTop="5dip"-->
+            <!--android:paddingBottom="5dip"-->
+            <!--android:layout_alignParentBottom="true"-->
+            <!--android:background="@android:color/white">-->
+        <!--</LinearLayout>-->
+
+        <!--&lt;!&ndash;此处变量layout：将layout_filter 和 filter_layout关联起来，-->
+        <!--filter_layout也就是 filter_layout.xml 文件。-->
+        <!--也就是将CameraActivity：中的 mFilterLayout和mFilterListView关联起来 &ndash;&gt;-->
+        <!--<include-->
+            <!--android:id="@+id/layout_filter"-->
+
+            <!--layout="@layout/filter_layout"-->
+            <!--android:visibility="invisible"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_gravity="bottom"/>-->
+    <!--</FrameLayout>-->
+
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -28,12 +55,17 @@
             android:layout_height="0dp"
             android:layout_weight="1">
 
-            <com.ksy.recordlib.service.view.CameraTextureView
-                android:id="@+id/textureview"
+            <com.ksy.recordlib.service.magicfilter.widget.MagicCameraView
+                android:id="@+id/glsurfaceview_camera"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_centerHorizontal="true"
-                android:layout_centerVertical="true" />
+                android:layout_height="wrap_content" />
+
+            <!--<com.ksy.recordlib.service.view.CameraTextureView-->
+                <!--android:id="@+id/textureview"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="match_parent"-->
+                <!--android:layout_centerHorizontal="true"-->
+                <!--android:layout_centerVertical="true" />-->
 
             <!--<SurfaceView-->
                 <!--android:id="@+id/surface_preview"-->
@@ -42,45 +74,67 @@
                 <!--android:layout_centerHorizontal="true"-->
                 <!--android:layout_centerVertical="true"/>-->
 
-            <android.support.design.widget.FloatingActionButton
-                android:id="@+id/fab"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
-                android:layout_gravity="bottom|end"
-                android:layout_margin="14dp"
-                android:src="@mipmap/btn_record"
-                app:elevation="6dp"
-                app:pressedTranslationZ="12dp" />
 
-            <android.support.design.widget.FloatingActionButton
-                android:id="@+id/change"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom|end"
-                android:src="@mipmap/btn_switch"
-                app:elevation="6dp"
-                app:pressedTranslationZ="12dp"
-                android:layout_alignBottom="@+id/flash"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:layout_marginLeft="14dp"
-                android:layout_marginStart="66dp" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
 
-            <android.support.design.widget.FloatingActionButton
-                android:id="@+id/flash"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
-                android:layout_gravity="bottom|end"
-                android:src="@mipmap/btn_flashlight"
-                app:elevation="6dp"
-                app:pressedTranslationZ="12dp"
-                android:layout_marginRight="160dp"
-                android:layout_alignBottom="@+id/fab" />
+                <android.support.design.widget.FloatingActionButton
+                    android:id="@+id/change"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@mipmap/btn_switch"
+                    android:layout_gravity="bottom"
+                    android:layout_weight="0"
+                    android:layout_marginLeft="14dp"
+                    android:layout_marginBottom="14dp"
+                    app:elevation="6dp"
+                    app:pressedTranslationZ="12dp"/>
+
+                <ImageView
+                    android:id="@+id/btn_camera_beauty"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/btn_camera_beauty"
+                    android:layout_weight="1"
+                    android:layout_gravity="bottom"
+                    android:layout_marginBottom="14dp"
+                    android:layout_alignBottom="@+id/change"/>
+
+                <android.support.design.widget.FloatingActionButton
+                    android:id="@+id/flash"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0"
+                    android:layout_gravity="bottom"
+                    android:layout_marginBottom="14dp"
+                    android:src="@mipmap/btn_flashlight"
+                    app:elevation="6dp"
+                    app:pressedTranslationZ="12dp"/>
+
+                <ImageView
+                    android:id="@+id/btn_camera_filter"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_gravity="bottom"
+                    android:layout_marginBottom="14dp"
+                    android:src="@drawable/btn_camera_filter"/>
+
+                <android.support.design.widget.FloatingActionButton
+                    android:id="@+id/fab"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@mipmap/btn_record"
+                    android:layout_weight="0"
+                    android:layout_gravity="bottom"
+                    android:layout_marginRight="14dp"
+                    android:layout_marginBottom="14dp"
+                    app:elevation="6dp"
+                    app:pressedTranslationZ="12dp"/>
+            </LinearLayout>
+
 
             <TextView
                 android:id="@+id/bitrate"
@@ -91,7 +145,7 @@
                 android:layout_alignParentTop="true"
                 android:layout_gravity="bottom|end"
                 android:layout_margin="16dp"
-                android:textColor="@color/error_color"
+                android:textColor="#FF5722"
                 android:textSize="10sp" />
         </RelativeLayout>
     </LinearLayout>

@@ -34,8 +34,8 @@ public class KsyRecordClientConfig {
     public static int previewOrientation;
 
     // http://developer.android.com/reference/android/media/MediaCodec.html#createByCodecName(java.lang.String)
-    private String videoCodec = "video/avc";
-    private int videoGop = 5;
+    private final String videoCodec = "video/avc";
+    private int videoGop = 1;
 
     String mUrl;
     OrientationActivity orientationActivity;
@@ -325,7 +325,7 @@ public class KsyRecordClientConfig {
         private int mAudioSampleRate = Constants.CONFIG_AUDIO_SAMPLERATE_44100;
         private int mAudioBitRate = Constants.CONFIG_AUDIO_BITRATE_32K;
         private int mAudioEncorder = MediaRecorder.AudioEncoder.AAC;
-        private int mVideoFrameRate = Constants.CONFIG_VIDEO_FRAME_RATE_25;
+        private int mVideoFrameRate = Constants.CONFIG_VIDEO_FRAME_RATE_21;
         private int mVideoBitRate = Constants.CONFIG_VIDEO_BITRATE_750K;
         private int mDropFrameFrequency = 0;
         private int mVideoWidth = 640;

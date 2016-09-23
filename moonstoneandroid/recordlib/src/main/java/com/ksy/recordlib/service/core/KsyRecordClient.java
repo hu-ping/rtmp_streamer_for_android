@@ -173,9 +173,11 @@ public class KsyRecordClient implements KsyRecord, OnClientErrorListener {
     }
 
     private void startRecordStep() {
-        if (setUpCamera(true)) {
-            setUpEncoder();
-        }
+//        if (setUpCamera(true)) {
+//            setUpEncoder();
+//        }
+
+        setUpEncoder();
     }
 
 
@@ -203,7 +205,8 @@ public class KsyRecordClient implements KsyRecord, OnClientErrorListener {
             throw new KsyRecordException("should set KsyRecordConfig first");
         }
         if (mSurfaceView == null && mTextureView == null) {
-            throw new KsyRecordException("preview surface or texture must be set first");
+            // TODO: 2016/9/2
+//            throw new KsyRecordException("preview surface or texture must be set first");
         }
         return mConfig.validateParam();
     }
@@ -497,12 +500,12 @@ public class KsyRecordClient implements KsyRecord, OnClientErrorListener {
     private void DealWithMediaCodec() {
         Log.d(Constants.LOG_TAG, "DealWithMediaCodec");
 
-        // Video Source
-        if (mVideoSource == null) {
-            mVideoSource = new VideoSourceEncoder(mCamera, mConfig, mSurfaceView, mRecordHandler, mContext);
-            mVideoSource.setOnClientErrorListener(this);
-            mVideoSource.start();
-        }
+//         // Video Source
+//        if (mVideoSource == null) {
+//            mVideoSource = new VideoSourceEncoder(mCamera, mConfig, mSurfaceView, mRecordHandler, mContext);
+//            mVideoSource.setOnClientErrorListener(this);
+//            mVideoSource.start();
+//        }
 
         // Audio Source
         if (mAudioSource == null) {

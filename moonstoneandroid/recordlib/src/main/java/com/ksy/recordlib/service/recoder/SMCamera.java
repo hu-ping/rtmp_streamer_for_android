@@ -119,6 +119,14 @@ public class SMCamera implements OnClientErrorListener{
         }
     }
 
+    public int getDisplayOrientation() {
+        return displayOrientation;
+    }
+
+    public int getCurrentCameraId() {
+        return currentCameraId;
+    }
+
     public void startPreview() {
         Camera.Size size = mCamera.new Size(mConfig.getVideoWidth(), mConfig.getVideoHeight());
 
