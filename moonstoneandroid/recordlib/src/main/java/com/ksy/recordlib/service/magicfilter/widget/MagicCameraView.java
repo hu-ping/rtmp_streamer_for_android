@@ -10,9 +10,10 @@ import android.opengl.EGL14;
 import android.opengl.GLES20;
 import android.os.Build;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.SurfaceHolder;
 
-import com.ksy.recordlib.service.core.KsyRecordClientConfig;
+import com.ksy.recordlib.service.core.SMRecordClientConfig;
 import com.ksy.recordlib.service.magicfilter.camera.CameraEngine;
 import com.ksy.recordlib.service.magicfilter.camera.utils.CameraInfo;
 import com.ksy.recordlib.service.magicfilter.filter.advanced.MagicBeautyFilter;
@@ -24,8 +25,8 @@ import com.ksy.recordlib.service.magicfilter.utils.OpenGlUtils;
 import com.ksy.recordlib.service.magicfilter.utils.Rotation;
 import com.ksy.recordlib.service.magicfilter.utils.TextureRotationUtil;
 import com.ksy.recordlib.service.magicfilter.widget.base.MagicBaseView;
-import com.ksy.recordlib.service.recoder.SMCamera;
 import com.ksy.recordlib.service.recoder.SMTextureVideoEncoder;
+import com.ksy.recordlib.service.util.Constants;
 import com.ksy.recordlib.service.util.OnClientErrorListener;
 
 import java.nio.ByteBuffer;
@@ -64,8 +65,8 @@ public class MagicCameraView extends MagicBaseView {
     /**
      * Camera module
      */
-    private SMCamera smCamera = null;
-    private KsyRecordClientConfig videoConfig;
+//    private SMCamera smCamera = null;
+    private SMRecordClientConfig mVideoConfig;
     private OnClientErrorListener onClientErrorListener;
     private SMTextureVideoEncoder textureVideoEncoder;
 
@@ -125,6 +126,7 @@ public class MagicCameraView extends MagicBaseView {
     }
 
 
+    // TODO: 2016/10/8 当按了停止按钮的时候这个地方可能会进入俩次
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
     @Override
     public void onDrawFrame(GL10 gl) {
@@ -149,7 +151,7 @@ public class MagicCameraView extends MagicBaseView {
         switch (recordingStatus) {
             case RECORDING_ON:
                 if (textureVideoEncoder == null) {
-                    textureVideoEncoder = new SMTextureVideoEncoder(videoConfig,
+                    textureVideoEncoder = new SMTextureVideoEncoder(mVideoConfig,
                             EGL14.eglGetCurrentContext(), null, null);
                 }
                 textureVideoEncoder.setTextureBuffer(gLTextureBuffer);
@@ -171,7 +173,9 @@ public class MagicCameraView extends MagicBaseView {
             case RECORDING_OFF:
                 CameraEngine.releaseCamera();
                 textureVideoEncoder.stopRecording();
-                recordingStatus = RECORDING_OFF;
+                // TODO: 2016/10/8 如果recordingStatus = RECORDING_OFF;
+                // 当按了停止按钮的时候这个地方可能会进入俩次，再次startRecord()，这个函数就不会执行了。
+                recordingStatus = RECORDING_UNKNOWN;
                 break;
 
             case RECORDING_UNKNOWN:
@@ -255,8 +259,8 @@ public class MagicCameraView extends MagicBaseView {
 //        videoEncoder.setFilter(type);
     }
 
-    public void setConfig(KsyRecordClientConfig mConfig) {
-        this.videoConfig = mConfig;
+    public void setConfig(SMRecordClientConfig mConfig) {
+        this.mVideoConfig = mConfig;
     }
 
     public void setOnClientErrorListener(OnClientErrorListener onClientErrorListener) {
@@ -264,8 +268,12 @@ public class MagicCameraView extends MagicBaseView {
     }
 
     private void openCamera(){
-        if(CameraEngine.getCamera() == null)
+        CameraEngine.setConfig(mVideoConfig);
+
+        if(CameraEngine.getCamera() == null) {
             CameraEngine.openCamera();
+        }
+
         CameraInfo info = CameraEngine.getCameraInfo();
         if(info.orientation == 90 || info.orientation == 270){
             imageWidth = info.previewHeight;
@@ -274,20 +282,23 @@ public class MagicCameraView extends MagicBaseView {
             imageWidth = info.previewWidth;
             imageHeight = info.previewHeight;
         }
+
         cameraInputFilter.onInputSizeChanged(imageWidth, imageHeight);
         adjustSize(info.orientation, info.isFront, true);
-        if(surfaceTexture != null)
+        if (surfaceTexture != null) {
             CameraEngine.startPreview(surfaceTexture);
+        }
     }
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
         super.surfaceDestroyed(holder);
-        if (smCamera != null) {
-            smCamera.stopCamera();
-        }
 
-//        CameraEngine.releaseCamera();
+//        if (smCamera != null) {
+//            smCamera.stopCamera();
+//        }
+
+        CameraEngine.releaseCamera();
     }
 
 

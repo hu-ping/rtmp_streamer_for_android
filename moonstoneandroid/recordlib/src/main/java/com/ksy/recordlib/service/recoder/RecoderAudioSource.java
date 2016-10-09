@@ -10,7 +10,7 @@ import android.util.Log;
 import com.ksy.recordlib.service.core.KSYFlvData;
 import com.ksy.recordlib.service.core.KsyMediaSource;
 import com.ksy.recordlib.service.core.KsyRecordClient;
-import com.ksy.recordlib.service.core.KsyRecordClientConfig;
+import com.ksy.recordlib.service.core.SMRecordClientConfig;
 import com.ksy.recordlib.service.core.KsyRecordSender;
 import com.ksy.recordlib.service.util.Constants;
 import com.ksy.recordlib.service.util.OnClientErrorListener;
@@ -33,7 +33,7 @@ public class RecoderAudioSource extends KsyMediaSource implements MediaRecorder.
     private static final int FRAME_DEFINE_TYPE_AUDIO = 8;
     private KsyRecordClient.RecordHandler mRecordHandler;
     private Context mContext;
-    private KsyRecordClientConfig mConfig;
+    private SMRecordClientConfig mConfig;
     private MediaRecorder mRecorder;
     private ParcelFileDescriptor[] piple;
     private long oldTime = 0;
@@ -70,7 +70,7 @@ public class RecoderAudioSource extends KsyMediaSource implements MediaRecorder.
 
     public static long startAudioTime;
 
-    public RecoderAudioSource(KsyRecordClientConfig mConfig, KsyRecordClient.RecordHandler mRecordHandler, Context mContext) {
+    public RecoderAudioSource(SMRecordClientConfig mConfig, KsyRecordClient.RecordHandler mRecordHandler, Context mContext) {
 //        super(mConfig.getUrl(), AUDIO_TAG);//TODO
         this.mConfig = mConfig;
         this.mRecordHandler = mRecordHandler;

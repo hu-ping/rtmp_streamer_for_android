@@ -3,8 +3,6 @@ package com.ksy.recordlib.service.recoder;
 import android.util.Log;
 
 import java.util.LinkedList;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * Created by 1 on 2016/2/22.
@@ -27,7 +25,7 @@ public class RtmpQueue<T> {
     }
 
 
-    public int dequeue(long timeoutMs, RtmpObj<T> ppkt) {
+    public int dequeue(long timeoutMs, RtmpContainer<T> ppkt) {
         int ret = RtmpStdin.ERROR_SUCCESS;
 
         synchronized (this) {
@@ -64,7 +62,7 @@ public class RtmpQueue<T> {
         return ret;
     }
 
-    public int dequeue(RtmpObj<T> ppkt) {
+    public int dequeue(RtmpContainer<T> ppkt) {
         int ret = RtmpStdin.ERROR_SUCCESS;
 
         synchronized (this) {

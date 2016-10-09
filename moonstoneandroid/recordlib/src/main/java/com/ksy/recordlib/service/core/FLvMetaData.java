@@ -27,7 +27,7 @@ public class FLvMetaData {
         DataSize = 0;
     }
 
-    public FLvMetaData(KsyRecordClientConfig builder) {
+    public FLvMetaData(SMRecordClientConfig builder) {
         this();
         //Audio
         switch (builder.getAudioEncoder()) {

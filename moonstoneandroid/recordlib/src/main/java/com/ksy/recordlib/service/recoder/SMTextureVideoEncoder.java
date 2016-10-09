@@ -3,12 +3,10 @@ package com.ksy.recordlib.service.recoder;
 import android.content.Context;
 import android.graphics.SurfaceTexture;
 import android.opengl.EGLContext;
-import android.os.Looper;
 import android.util.Log;
 
-import com.ksy.recordlib.service.core.KSYFlvData;
 import com.ksy.recordlib.service.core.KsyRecordClient;
-import com.ksy.recordlib.service.core.KsyRecordClientConfig;
+import com.ksy.recordlib.service.core.SMRecordClientConfig;
 import com.ksy.recordlib.service.magicfilter.encoder.gles.EglCore;
 import com.ksy.recordlib.service.magicfilter.encoder.video.WindowSurface;
 import com.ksy.recordlib.service.magicfilter.filter.base.MagicCameraInputFilter;
@@ -16,8 +14,6 @@ import com.ksy.recordlib.service.magicfilter.filter.base.gpuimage.GPUImageFilter
 import com.ksy.recordlib.service.util.Constants;
 
 import java.nio.FloatBuffer;
-import java.util.Collections;
-import java.util.Comparator;
 
 /**
  * Created by huping on 2016/8/31.
@@ -29,7 +25,7 @@ public class SMTextureVideoEncoder implements IVideoEncoder{
      */
     private final KsyRecordClient.RecordHandler mainHandler;
     private final Context mContext;
-    private KsyRecordClientConfig mVideoConfig;
+    private SMRecordClientConfig mVideoConfig;
     private SMTextureVideoEncoderCore videoEncoderCore = null;
 //    private VideoEncoderCore videoEncoderCore = null;
 
@@ -60,7 +56,7 @@ public class SMTextureVideoEncoder implements IVideoEncoder{
     // packet to process.
     private RtmpBlockingQueue<RtmpMessage> queue = new RtmpBlockingQueue(1);
 
-    public SMTextureVideoEncoder(KsyRecordClientConfig videoConfig, EGLContext sharedEglContext,
+    public SMTextureVideoEncoder(SMRecordClientConfig videoConfig, EGLContext sharedEglContext,
                                  KsyRecordClient.RecordHandler mRecordHandler, Context mContext) {
         this.mVideoConfig = videoConfig;
         this.sharedEglContext = sharedEglContext;
@@ -103,7 +99,7 @@ public class SMTextureVideoEncoder implements IVideoEncoder{
         int ret = RtmpStdin.ERROR_SUCCESS;
 
         for (;;) {
-            RtmpObj<RtmpMessage> ppkt = new RtmpObj<>();
+            RtmpContainer<RtmpMessage> ppkt = new RtmpContainer<>();
             if ((ret = queue.dequeue(ppkt)) != RtmpStdin.ERROR_SUCCESS) {
                 // timeout, return to close session.
                 //return ret;
@@ -190,6 +186,9 @@ public class SMTextureVideoEncoder implements IVideoEncoder{
      * has completed).
      */
     public void stopRecording() {
+        Log.e(Constants.LOG_TAG, "stopRecording");
+        Log.e(Constants.LOG_TAG, "" + queue.count());
+
         feedRtmpMessage(MSG_STOP_RECORDING);
         feedRtmpMessage(MSG_QUIT);
         // We don't know when these will actually finish (or even start).  We don't want to

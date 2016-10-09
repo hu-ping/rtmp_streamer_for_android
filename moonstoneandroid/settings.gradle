@@ -1,2 +1,2 @@
-include ':recordlib'
+include ':recordlib', ':sample0'
 include 'app'

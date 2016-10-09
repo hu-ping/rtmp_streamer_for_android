@@ -7,7 +7,7 @@ import android.util.Log;
 import com.heinrichreimersoftware.materialdrawer.structure.DrawerItem;
 import com.ksy.ksyrecordsdk.R;
 import com.ksy.recordlib.service.core.CameraHelper;
-import com.ksy.recordlib.service.core.KsyRecordClientConfig;
+import com.ksy.recordlib.service.core.SMRecordClientConfig;
 import com.ksy.recordlib.service.util.Constants;
 
 import java.util.ArrayList;
@@ -17,7 +17,7 @@ import java.util.List;
  * Created by hansentian on 7/16/15.
  */
 public class DrawerItemConfigAdapter {
-    private KsyRecordClientConfig config;
+    private SMRecordClientConfig config;
     private ArrayList<ConfigItem> items;
     private ArrayList<DrawerItem> drawerItems;
     private Context context;
@@ -46,7 +46,7 @@ public class DrawerItemConfigAdapter {
         return this;
     }
 
-    public DrawerItemConfigAdapter setConfig(KsyRecordClientConfig config) {
+    public DrawerItemConfigAdapter setConfig(SMRecordClientConfig config) {
         this.config = config;
         return this;
     }

@@ -14,7 +14,7 @@ import android.view.SurfaceView;
 
 import com.ksy.recordlib.service.core.KsyMediaSource;
 import com.ksy.recordlib.service.core.KsyRecordClient;
-import com.ksy.recordlib.service.core.KsyRecordClientConfig;
+import com.ksy.recordlib.service.core.SMRecordClientConfig;
 import com.ksy.recordlib.service.core.KsyRecordSender;
 import com.ksy.recordlib.service.core.ThroughputStatistic;
 import com.ksy.recordlib.service.muxer.FlvTagMuxer;
@@ -34,7 +34,7 @@ public class VideoSourceEncoder extends KsyMediaSource{
     private final Context mContext;
     private Camera mCamera;
     private KsyRecordSender ksyVideoSender;
-    private KsyRecordClientConfig mConfig;
+    private SMRecordClientConfig mConfig;
 
     /**
      * MediaCodec module
@@ -70,7 +70,7 @@ public class VideoSourceEncoder extends KsyMediaSource{
     private int bitrateIndex = 0;
     private int currentBitrate = 0;
 
-    public VideoSourceEncoder(Camera mCamera, KsyRecordClientConfig mConfig, SurfaceView mSurfaceView,
+    public VideoSourceEncoder(Camera mCamera, SMRecordClientConfig mConfig, SurfaceView mSurfaceView,
                               KsyRecordClient.RecordHandler mRecordHandler, Context mContext) {
         this.mCamera = mCamera;
         this.mConfig = mConfig;

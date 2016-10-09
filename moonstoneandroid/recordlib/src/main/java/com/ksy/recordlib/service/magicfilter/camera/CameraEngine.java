@@ -5,12 +5,13 @@ import android.hardware.Camera;
 import android.hardware.Camera.CameraInfo;
 import android.hardware.Camera.Parameters;
 import android.hardware.Camera.Size;
-import android.view.Display;
-import android.view.Surface;
+import android.util.Log;
 import android.view.SurfaceView;
 
 
+import com.ksy.recordlib.service.core.SMRecordClientConfig;
 import com.ksy.recordlib.service.magicfilter.camera.utils.CameraUtils;
+import com.ksy.recordlib.service.util.Constants;
 
 import java.io.IOException;
 
@@ -20,6 +21,7 @@ public class CameraEngine {
     private static SurfaceTexture surfaceTexture;
     private static SurfaceView surfaceView;
     private static int rotateDegrees = 0;
+    private static SMRecordClientConfig mVideoConfig;
 
     public static Camera getCamera(){
         return camera;
@@ -63,6 +65,10 @@ public class CameraEngine {
         }
     }
 
+    public static void setConfig(SMRecordClientConfig mConfig) {
+        mVideoConfig = mConfig;
+    }
+
     public void resumeCamera(){
         openCamera();
     }
@@ -94,9 +100,22 @@ public class CameraEngine {
         parameters.setPreviewSize(previewSize.width, previewSize.height);
         Size pictureSize = CameraUtils.getLargePictureSize(camera);
         parameters.setPictureSize(pictureSize.width, pictureSize.height);
-        parameters.setRotation(90);
-        camera.setParameters(parameters);
 
+        int result = 0;
+        rotateDegrees = mVideoConfig.getRecordOrientation();
+        android.hardware.Camera.CameraInfo info = new android.hardware.Camera.CameraInfo();
+        android.hardware.Camera.getCameraInfo(Camera.getNumberOfCameras() - 1, info);
+        if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+            result = (info.orientation + rotateDegrees) % 360;
+            result = (360 - result) % 360;    // compensate the mirror
+        } else {
+            result = (info.orientation - rotateDegrees + 360) % 360;
+        }
+        rotateDegrees = result;
+        parameters.setRotation(rotateDegrees);
+        mVideoConfig.setRecordOrientation(rotateDegrees);
+
+        camera.setParameters(parameters);
 
 //        int result = 0;
 //        android.hardware.Camera.CameraInfo info = new android.hardware.Camera.CameraInfo();

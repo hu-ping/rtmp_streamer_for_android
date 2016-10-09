@@ -1,5 +1,6 @@
 package com.ksy.recordlib.service.core;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -48,7 +49,7 @@ public class KsyRecordClient implements KsyRecord, OnClientErrorListener {
     //private int mEncodeMode = Constants.ENCODE_MODE_MEDIA_RECORDER;
     private int mEncodeMode = Constants.ENCODE_MODE_MEDIA_CODEC;
 
-    private static KsyRecordClientConfig mConfig;
+    private static SMRecordClientConfig mConfig;
     private Camera mCamera;
     private KSYRtmpFlvClient mKsyRtmpFlvClient;
     private SurfaceView mSurfaceView;
@@ -148,7 +149,8 @@ public class KsyRecordClient implements KsyRecord, OnClientErrorListener {
         startTime = System.currentTimeMillis();
         mEncodeMode = judgeEncodeMode(mContext);
         try {
-            mConfig.setOrientationActivity(orientationActivity);
+//            mConfig.setOrientationActivity(orientationActivity);
+
             ksyRecordSender.setConfig(mConfig);
             ksyRecordSender.setInputUrl(mConfig.getUrl());
             ksyRecordSender.start(mContext);
@@ -304,7 +306,7 @@ public class KsyRecordClient implements KsyRecord, OnClientErrorListener {
                     return false;
                 }
                 displayOrientation = CameraUtil.getDisplayOrientation(0, currentCameraId);
-                KsyRecordClientConfig.previewOrientation = displayOrientation;
+                SMRecordClientConfig.previewOrientation = displayOrientation;
                 Log.d(Constants.LOG_TAG, "current displayOrientation = " + displayOrientation);
                 mCamera.setDisplayOrientation(displayOrientation);
                 Camera.Parameters parameters = mCamera.getParameters();
@@ -555,7 +557,9 @@ public class KsyRecordClient implements KsyRecord, OnClientErrorListener {
             }
             mCamera = null;
         }
+
         ksyRecordSender.disconnect();
+
         clientState = STATE.STOP;
         isCanTurnLightFlag = false;
         mSwitchCameraLock = false;
@@ -694,11 +698,11 @@ public class KsyRecordClient implements KsyRecord, OnClientErrorListener {
         }
     }
 
-    public static void setConfig(KsyRecordClientConfig mConfig) {
+    public static void setConfig(SMRecordClientConfig mConfig) {
         KsyRecordClient.mConfig = mConfig;
     }
 
-    public static KsyRecordClientConfig getConfig(){
+    public static SMRecordClientConfig getConfig(){
         return mConfig;
     }
 

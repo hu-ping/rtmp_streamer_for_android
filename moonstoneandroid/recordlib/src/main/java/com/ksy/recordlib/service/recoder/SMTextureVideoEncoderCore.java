@@ -1,29 +1,22 @@
 package com.ksy.recordlib.service.recoder;
 
 import android.annotation.TargetApi;
-import android.content.Context;
-import android.hardware.Camera;
 import android.media.MediaCodec;
 import android.media.MediaCodecInfo;
 import android.media.MediaCodecList;
 import android.media.MediaFormat;
-import android.media.MediaMuxer;
-import android.opengl.EGLContext;
 import android.os.Build;
 import android.util.Log;
 import android.view.Surface;
 import android.view.SurfaceView;
 
-import com.ksy.recordlib.service.core.KsyRecordClient;
-import com.ksy.recordlib.service.core.KsyRecordClientConfig;
+import com.ksy.recordlib.service.core.SMRecordClientConfig;
 import com.ksy.recordlib.service.core.KsyRecordSender;
-import com.ksy.recordlib.service.magicfilter.utils.MagicParams;
 import com.ksy.recordlib.service.muxer.FlvTagMuxer;
 import com.ksy.recordlib.service.muxer.H264Utils;
 import com.ksy.recordlib.service.util.Constants;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -63,7 +56,7 @@ public class SMTextureVideoEncoderCore {
     private int currentBitrate = 0;
 
     private KsyRecordSender ksyVideoSender;
-    private KsyRecordClientConfig mVideoConfig;
+    private SMRecordClientConfig mVideoConfig;
 
     private boolean mMuxerStarted;
     private Surface mInputSurface;
@@ -93,11 +86,10 @@ public class SMTextureVideoEncoderCore {
             throws IOException {
     }
 
-    public SMTextureVideoEncoderCore(KsyRecordClientConfig videoConfig, SurfaceView mSurfaceView) {
+    public SMTextureVideoEncoderCore(SMRecordClientConfig videoConfig, SurfaceView mSurfaceView) {
         this.mVideoConfig = videoConfig;
         this.ksyVideoSender = KsyRecordSender.getRecordInstance();
-        this.rotateDegrees = videoConfig.updateRecordOrientation();
-
+//        this.rotateDegrees = videoConfig.updateRecordOrientation();
 
 //        try {
 //            this.h264Stream = new FileOutputStream(new File(MagicParams.videoPath,MagicParams.h264Name));
@@ -217,7 +209,7 @@ public class SMTextureVideoEncoderCore {
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
     public void drainEncoder(boolean endOfStream) {
         final int TIMEOUT_USEC = 10000;
-        Log.d(Constants.LOG_TAG, "drainEncoder(" + endOfStream + ")");
+//        Log.d(Constants.LOG_TAG, "drainEncoder(" + endOfStream + ")");
 
         if (endOfStream) {
 //            if (VERBOSE) Log.d(TAG, "sending EOS to encoder");
@@ -261,7 +253,7 @@ public class SMTextureVideoEncoderCore {
                             " was null");
                 }
 
-                H264Utils.srs_print_bytes(Constants.LOG_TAG, encodedData, 10);
+//                H264Utils.srs_print_bytes(Constants.LOG_TAG, encodedData, 10);
 //                for (int i = 0; i < encodedData.limit(); i++) {
 //                    try {
 //                        byte data = encodedData.get(i);
@@ -289,8 +281,8 @@ public class SMTextureVideoEncoderCore {
 
                     onEncodedAnnexbFrame(encodedData, codecBufferInfo);
 
-                    Log.d(Constants.LOG_TAG, "sent " + codecBufferInfo.size + " bytes to muxer, ts=" +
-                            codecBufferInfo.presentationTimeUs);
+//                    Log.d(Constants.LOG_TAG, "sent " + codecBufferInfo.size + " bytes to muxer, ts=" +
+//                            codecBufferInfo.presentationTimeUs);
 
                 }
 

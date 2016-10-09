@@ -1,7 +1,7 @@
 package com.ksy.recordlib.service.magicfilter;
 
 
-import com.ksy.recordlib.service.core.KsyRecordClientConfig;
+import com.ksy.recordlib.service.core.SMRecordClientConfig;
 import com.ksy.recordlib.service.magicfilter.camera.CameraEngine;
 import com.ksy.recordlib.service.magicfilter.filter.helper.MagicFilterType;
 import com.ksy.recordlib.service.magicfilter.helper.SavePictureTask;
@@ -29,7 +29,7 @@ public class MagicEngine {
 
     }
 
-    public void setConfig(KsyRecordClientConfig mConfig) {
+    public void setConfig(SMRecordClientConfig mConfig) {
         if(MagicParams.magicBaseView instanceof MagicCameraView) {
             ((MagicCameraView) MagicParams.magicBaseView).setConfig(mConfig);
         }

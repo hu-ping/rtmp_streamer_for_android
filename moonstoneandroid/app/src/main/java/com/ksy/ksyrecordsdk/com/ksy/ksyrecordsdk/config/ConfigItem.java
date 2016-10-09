@@ -2,7 +2,7 @@ package com.ksy.ksyrecordsdk.com.ksy.ksyrecordsdk.config;
 
 
 import com.ksy.recordlib.service.core.CameraHelper;
-import com.ksy.recordlib.service.core.KsyRecordClientConfig;
+import com.ksy.recordlib.service.core.SMRecordClientConfig;
 import com.ksy.recordlib.service.util.Constants;
 
 /**
@@ -15,7 +15,7 @@ public class ConfigItem {
     public String[] configValueName;
 
 
-    public int currentValue(KsyRecordClientConfig config) {
+    public int currentValue(SMRecordClientConfig config) {
         int currentValueString = 0;
         switch (index) {
             case Constants.SETTING_AUDIO_SAMPLE_RATE:
@@ -37,7 +37,7 @@ public class ConfigItem {
         return currentValueString;
     }
 
-    public String currentValueString(KsyRecordClientConfig config) {
+    public String currentValueString(SMRecordClientConfig config) {
         if (config == null) {
             return null;
         }
@@ -66,7 +66,7 @@ public class ConfigItem {
 
     }
 
-    public void changeValue(KsyRecordClientConfig config, int selected, String value) {
+    public void changeValue(SMRecordClientConfig config, int selected, String value) {
         switch (index) {
             case Constants.SETTING_AUDIO_SAMPLE_RATE:
                 config.setmAudioSampleRate(configValue[selected]);

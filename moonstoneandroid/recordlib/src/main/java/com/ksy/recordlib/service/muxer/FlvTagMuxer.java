@@ -6,7 +6,7 @@ import android.util.Log;
 import com.ksy.recordlib.service.core.KSYFlvData;
 import com.ksy.recordlib.service.core.KsyMediaSource;
 import com.ksy.recordlib.service.core.KsyRecordClient;
-import com.ksy.recordlib.service.core.KsyRecordClientConfig;
+import com.ksy.recordlib.service.core.SMRecordClientConfig;
 import com.ksy.recordlib.service.core.KsyRecordSender;
 import com.ksy.recordlib.service.util.ByteConvert;
 import com.ksy.recordlib.service.util.Constants;
@@ -15,7 +15,6 @@ import com.ksy.recordlib.service.util.TimeStampCreator;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.LinkedList;
 
 /**
  * Created by Administrator on 2016/8/9.
@@ -45,7 +44,7 @@ public class FlvTagMuxer implements Muxer {
     private static final int FRAME_DEFINE_HEAD_LENGTH = 11;
     private static final int FRAME_DEFINE_FOOTER_LENGTH = 4;
     private int last_sum = 0;
-    private KsyRecordClientConfig mConfig;
+    private SMRecordClientConfig mConfig;
 
     private byte[] flvFrameByteArray;
     private byte[] dataLengthArray;
@@ -59,7 +58,7 @@ public class FlvTagMuxer implements Muxer {
     private Byte kFlag;
     private int nalutype;
 
-    public FlvTagMuxer(KsyRecordClientConfig mConfig, KsyMediaSource.ClockSync sync) {
+    public FlvTagMuxer(SMRecordClientConfig mConfig, KsyMediaSource.ClockSync sync) {
         this.sync = sync;
         this.mConfig = mConfig;
         this.ksyVideoSender = KsyRecordSender.getRecordInstance();
@@ -149,14 +148,14 @@ public class FlvTagMuxer implements Muxer {
                 continue;
             }
 
-            Log.i(Constants.LOG_TAG, "isiFrame:" + isiFrame);
-            encodeCount++;
-            if (bi.flags != 0) {
-                Log.e(Constants.LOG_TAG, "flags:" + bi.flags
-                        + ", nal_unit_type:" + nal_unit_type
-                        + ", count:" + encodeCount);
-                encodeCount = 0;
-            }
+//            Log.i(Constants.LOG_TAG, "isiFrame:" + isiFrame);
+//            encodeCount++;
+//            if (bi.flags != 0) {
+//                Log.e(Constants.LOG_TAG, "flags:" + bi.flags
+//                        + ", nal_unit_type:" + nal_unit_type
+//                        + ", count:" + encodeCount);
+//                encodeCount = 0;
+//            }
 
             // for sps
             if (avc.is_sps(frame)) {
@@ -207,7 +206,7 @@ public class FlvTagMuxer implements Muxer {
 
         if (frame_type == CodecVideoAVCFrame.KeyFrame) {
             //Log.i(TAG, String.format("flv: keyframe %dB, dts=%d", flv_tag.size, dts));
-            Log.e(Constants.LOG_TAG, String.format("flv: keyframe, dts=%d", dts));
+//            Log.e(Constants.LOG_TAG, String.format("flv: keyframe, dts=%d", dts));
         }
 
         // h.264 raw data.
@@ -221,7 +220,7 @@ public class FlvTagMuxer implements Muxer {
                 nalutype = kFlag & 0x1F;
 
                 // Three types of flv video frame
-                writeFlvFrame(FRAME_TYPE_DATA, data, frame.size, frame_type, isiFrame);
+                writeFlvVideoFrame(FRAME_TYPE_DATA, data, frame.size, frame_type, isiFrame);
             }
         }
     }
@@ -251,7 +250,7 @@ public class FlvTagMuxer implements Muxer {
         fillArray(sps_pps, pps_length);
         fillArray(sps_pps, pps_only);
 
-        writeFlvFrame(FRAME_TYPE_SPS, sps_pps, sps_pps.length, CodecVideoAVCFrame.KeyFrame, true);
+        writeFlvVideoFrame(FRAME_TYPE_SPS, sps_pps, sps_pps.length, CodecVideoAVCFrame.KeyFrame, true);
 
         // reset sps and pps.
         h264_sps_changed = false;
@@ -261,7 +260,7 @@ public class FlvTagMuxer implements Muxer {
 
 
 
-    private void writeFlvFrame(int type, byte[] frame, int length, int frame_type, boolean isiFrame) {
+    private void writeFlvVideoFrame(int type, byte[] frame, int length, int frame_type, boolean isiFrame) {
 //        timeStamp = sync.getTime();
         timeStamp = TimeStampCreator.getTimeStampCreator().createAbsoluteTimestamp();
 

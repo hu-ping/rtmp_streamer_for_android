@@ -41,7 +41,7 @@ public class ThroughputStatistic {
         this.rateGrowthAvg = 0;
     }
 
-    public void calcQueueLevelLimit(KsyRecordClientConfig mConfig) {
+    public void calcQueueLevelLimit(SMRecordClientConfig mConfig) {
         QUEUE_SIZE = mConfig.getVideoFrameRate() * 4;
         LEVEL1_QUEUE_SIZE = QUEUE_SIZE /4;
         LEVEL2_QUEUE_SIZE = QUEUE_SIZE /4 * 3;

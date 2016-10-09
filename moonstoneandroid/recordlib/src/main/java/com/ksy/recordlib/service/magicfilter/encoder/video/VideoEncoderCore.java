@@ -144,7 +144,7 @@ public class VideoEncoderCore {
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
     public void drainEncoder(boolean endOfStream) {
         final int TIMEOUT_USEC = 10000;
-        if (VERBOSE) Log.d(TAG, "drainEncoder(" + endOfStream + ")");
+//        if (VERBOSE) Log.d(TAG, "drainEncoder(" + endOfStream + ")");
 
         if (endOfStream) {
             if (VERBOSE) Log.d(TAG, "sending EOS to encoder");

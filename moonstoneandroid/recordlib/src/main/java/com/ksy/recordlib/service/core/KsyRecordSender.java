@@ -149,7 +149,7 @@ public class KsyRecordSender implements Throughput{
         while (!connected) {
             Thread.sleep(10);
         }
-        while (!Thread.interrupted()) {
+        while (!Thread.interrupted() && connected) {
 //            Log.i(Constants.LOG_TAG, "recordQueue size:" + recordQueue.size());
 
             KSYFlvData ksyFlv = null;
@@ -162,7 +162,8 @@ public class KsyRecordSender implements Throughput{
                             e.printStackTrace();
                             //Log.e(TAG, String.format("cond wait timeout, timeout =%s, ret=%d",
                             //        timeoutMs , ret));
-                            return;
+//                            return;
+                            break;
                         }
                     }
                 } catch (Exception e) {
@@ -370,10 +371,10 @@ public class KsyRecordSender implements Throughput{
 
     private static final int STATISTIC_INTERVAL_MS = 1000;
     private static final int STATISTIC_DELAY_MS = 3000;
-    private KsyRecordClientConfig mConfig = null;
+    private SMRecordClientConfig mConfig = null;
     private ThroughputStatistic statistic = new ThroughputStatistic();
     private long lastTimeMs = 0;
-    public  void setConfig(KsyRecordClientConfig mConfig) {
+    public  void setConfig(SMRecordClientConfig mConfig) {
         this.mConfig = mConfig;
         this.statistic.calcQueueLevelLimit(mConfig);
     }
@@ -508,9 +509,12 @@ public class KsyRecordSender implements Throughput{
             }
             vidoeFps.tickTock();
             lastAddVideoTs = ksyFlvData.dts;
-//                Log.d(Constants.LOG_TAG, "video_enqueue = " + ksyFlvData.dts + " " + ksyFlvData.isKeyframe());
+
+//            Log.d(Constants.LOG_TAG, "video_dts = " + ksyFlvData.dts + " " + ksyFlvData.isKeyframe());
         } else if (k == FROM_AUDIO) {//音频数据
             lastAddAudioTs = ksyFlvData.dts;
+
+//            Log.d(Constants.LOG_TAG, "audio_dts = " + ksyFlvData.dts);
         }
 
         synchronized (mutex) {
@@ -559,6 +563,8 @@ public class KsyRecordSender implements Throughput{
         if (worker.isAlive()) {
             worker.interrupt();
         }
+
+        worker = null;
         recordQueue.clear();
         statData.clear();
         connected = false;

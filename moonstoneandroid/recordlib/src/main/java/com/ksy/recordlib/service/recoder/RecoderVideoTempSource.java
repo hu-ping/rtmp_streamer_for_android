@@ -8,7 +8,7 @@ import android.view.SurfaceView;
 
 import com.ksy.recordlib.service.core.KsyMediaSource;
 import com.ksy.recordlib.service.core.KsyRecordClient;
-import com.ksy.recordlib.service.core.KsyRecordClientConfig;
+import com.ksy.recordlib.service.core.SMRecordClientConfig;
 import com.ksy.recordlib.service.core.KsyRecordSender;
 import com.ksy.recordlib.service.util.Constants;
 import com.ksy.recordlib.service.util.FileUtil;
@@ -30,13 +30,13 @@ public class RecoderVideoTempSource extends KsyMediaSource implements MediaRecor
     private final Context mContext;
     private Camera mCamera;
     private MediaRecorder mRecorder;
-    private KsyRecordClientConfig mConfig;
+    private SMRecordClientConfig mConfig;
     private String path;
     private static final int VIDEO_TEMP = 1;
 
     private KsyRecordSender ksyVideoTempSender;
 
-    public RecoderVideoTempSource(Camera mCamera, KsyRecordClientConfig mConfig, SurfaceView mSurfaceView, KsyRecordClient.RecordHandler mRecordHandler, Context mContext) {
+    public RecoderVideoTempSource(Camera mCamera, SMRecordClientConfig mConfig, SurfaceView mSurfaceView, KsyRecordClient.RecordHandler mRecordHandler, Context mContext) {
 //        super(mConfig.getUrl(), VIDEO_TEMP);
         this.mCamera = mCamera;
         this.mConfig = mConfig;
@@ -50,7 +50,7 @@ public class RecoderVideoTempSource extends KsyMediaSource implements MediaRecor
     public void prepare() {
         try {
             mRecorder.setCamera(mCamera);
-            mConfig.configMediaRecorder(mRecorder, KsyRecordClientConfig.MEDIA_TEMP);
+            mConfig.configMediaRecorder(mRecorder, SMRecordClientConfig.MEDIA_TEMP);
             path = FileUtil.getOutputMediaFile(mContext, Constants.MEDIA_TYPE_VIDEO);
             mRecorder.setOutputFile(path);
             mRecorder.setMaxDuration(3000);

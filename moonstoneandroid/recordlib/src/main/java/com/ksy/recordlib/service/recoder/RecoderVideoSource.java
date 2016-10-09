@@ -12,7 +12,7 @@ import android.view.SurfaceView;
 import com.ksy.recordlib.service.core.KSYFlvData;
 import com.ksy.recordlib.service.core.KsyMediaSource;
 import com.ksy.recordlib.service.core.KsyRecordClient;
-import com.ksy.recordlib.service.core.KsyRecordClientConfig;
+import com.ksy.recordlib.service.core.SMRecordClientConfig;
 import com.ksy.recordlib.service.core.KsyRecordSender;
 import com.ksy.recordlib.service.util.Constants;
 import com.ksy.recordlib.service.util.OnClientErrorListener;
@@ -47,7 +47,7 @@ public class RecoderVideoSource extends KsyMediaSource implements MediaRecorder.
     private final Context mContext;
     private Camera mCamera;
     private MediaRecorder mRecorder;
-    private KsyRecordClientConfig mConfig;
+    private SMRecordClientConfig mConfig;
     private ParcelFileDescriptor[] piple;
     //    private long delay = 0;
     private int length;
@@ -74,7 +74,7 @@ public class RecoderVideoSource extends KsyMediaSource implements MediaRecorder.
     public static long startVideoTime;
 
 
-    public RecoderVideoSource(Camera mCamera, KsyRecordClientConfig mConfig, SurfaceView mSurfaceView,
+    public RecoderVideoSource(Camera mCamera, SMRecordClientConfig mConfig, SurfaceView mSurfaceView,
                               KsyRecordClient.RecordHandler mRecordHandler, Context mContext) {
         this.mCamera = mCamera;
         this.mConfig = mConfig;
@@ -89,7 +89,7 @@ public class RecoderVideoSource extends KsyMediaSource implements MediaRecorder.
     @Override
     public void prepare() {
         mRecorder.setCamera(mCamera);
-        mConfig.configMediaRecorder(mRecorder, KsyRecordClientConfig.MEDIA_SETP);
+        mConfig.configMediaRecorder(mRecorder, SMRecordClientConfig.MEDIA_SETP);
         try {
             this.piple = ParcelFileDescriptor.createPipe();
         } catch (IOException e) {

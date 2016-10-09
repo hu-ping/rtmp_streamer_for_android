@@ -1,31 +1,25 @@
 package com.ksy.ksyrecordsdk;
 
-import android.Manifest;
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
-import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Point;
 import android.hardware.Camera;
 import android.media.CamcorderProfile;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.SurfaceView;
 import android.view.TextureView;
 import android.view.View;
 import android.view.WindowManager;
@@ -40,7 +34,7 @@ import com.heinrichreimersoftware.materialdrawer.DrawerView;
 import com.heinrichreimersoftware.materialdrawer.structure.DrawerItem;
 import com.ksy.ksyrecordsdk.com.ksy.ksyrecordsdk.config.DrawerItemConfigAdapter;
 import com.ksy.recordlib.service.core.KsyRecordClient;
-import com.ksy.recordlib.service.core.KsyRecordClientConfig;
+import com.ksy.recordlib.service.core.SMRecordClientConfig;
 import com.ksy.recordlib.service.core.KsyRecordSender;
 import com.ksy.recordlib.service.exception.KsyRecordException;
 import com.ksy.recordlib.service.magicfilter.MagicEngine;
@@ -65,7 +59,7 @@ public class MainActivity extends AppCompatActivity implements OrientationActivi
     private FloatingActionButton mFab, change, flashlight;
     private boolean mRecording = false;
     private KsyRecordClient client;                        //core
-    private KsyRecordClientConfig config;
+    private SMRecordClientConfig config;
     private RelativeLayout mContainer;
     private ImageView mImageView;
     private TextView bitrate;
@@ -240,8 +234,8 @@ public class MainActivity extends AppCompatActivity implements OrientationActivi
                         @Override
                         public void run() {
                             //定时器实时显示当前监控信息
-                            bitrate.setText("push url =" + config.getUrl() + "," + KsyRecordSender.getRecordInstance().getAVBitrate() + "record angle =" + KsyRecordClientConfig.recordOrientation + ",preview angel =" + KsyRecordClientConfig.previewOrientation);
-//                            bitrate.setText(KsyRecordSender.getRecordInstance().getAVBitrate() + "record angle =" + KsyRecordClientConfig.recordOrientation + ",preview angel =" + KsyRecordClientConfig.previewOrientation);
+                            bitrate.setText("push url =" + config.getUrl() + "," + KsyRecordSender.getRecordInstance().getAVBitrate());
+//                            bitrate.setText(KsyRecordSender.getRecordInstance().getAVBitrate() + "record angle =" + SMRecordClientConfig.recordOrientation + ",preview angel =" + SMRecordClientConfig.previewOrientation);
                         }
                     }, 1000);
                 }
@@ -319,7 +313,7 @@ public class MainActivity extends AppCompatActivity implements OrientationActivi
     private void setUpEnvironment() {
         // Keep screen on
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        KsyRecordClientConfig.Builder builder = new KsyRecordClientConfig.Builder();
+        SMRecordClientConfig.Builder builder = new SMRecordClientConfig.Builder();
         builder.setVideoProfile(CamcorderProfile.QUALITY_480P).setUrl(Constants.URL_DEFAULT);
         builder.setCameraType(Camera.CameraInfo.CAMERA_FACING_BACK);
 //        builder.setVideoBitRate(Constants.CONFIG_VIDEO_BITRATE_250K);
