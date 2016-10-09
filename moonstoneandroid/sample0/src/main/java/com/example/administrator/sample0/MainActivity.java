@@ -32,6 +32,7 @@ public class MainActivity extends Activity {
     private AVImageView mImageView;
 
     private boolean mRecording = false;
+    private int mBeautyLevel = 5;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,9 +76,10 @@ public class MainActivity extends Activity {
 
                 case R.id.btn_camera_beauty:
                     new AlertDialog.Builder(MainActivity.this)
-                            .setSingleChoiceItems(new String[] { "关闭", "1", "2", "3", "4", "5"}, 5,
+                            .setSingleChoiceItems(new String[] { "关闭", "1", "2", "3", "4", "5"}, mBeautyLevel,
                                     new DialogInterface.OnClickListener() {
                                         public void onClick(DialogInterface dialog, int which) {
+                                            mBeautyLevel = which;
                                             mAVcontext.getVideoCtrl().inputBeautyParam(which);
                                             dialog.dismiss();
                                         }

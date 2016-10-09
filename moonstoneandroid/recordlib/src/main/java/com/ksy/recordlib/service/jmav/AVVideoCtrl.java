@@ -71,7 +71,7 @@ public class AVVideoCtrl {
     }
 
     public  void inputBeautyParam(float var1) {
-        magicEngine.setBeautyLevel(5);
+        magicEngine.setBeautyLevel((int) var1);
     }
 
     public  void inputWhiteningParam(float var1) {
